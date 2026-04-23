@@ -1,51 +1,398 @@
 /* ==========================================================================
    Plataforma de Apresentação — Assessoria Regulatória em Geração de Energia
    Edson Araújo Advogados · Thiago Fernandes Advogado
+   --------------------------------------------------------------------------
+   Design system v2 · 2026
+   Paleta petrol-emerald refinada · tipografia Inter · sombras em camadas
    ========================================================================== */
 
 :root {
-  --bg-main: #F8F9FA;
+  /* ---------- Brand palette (petrol + emerald) ---------- */
+  --petrol-950: #04252F;
+  --petrol-900: #062F3D;
+  --petrol-800: #083B4D;
+  --petrol-700: #0A4761;
+  --petrol-600: #0E5B78;
+  --petrol-500: #146C8B;
+  --petrol-400: #2E8AAA;
+  --petrol-300: #6DB3CB;
+  --petrol-200: #B4D8E4;
+  --petrol-100: #DFEDF3;
+  --petrol-50:  #F1F7FA;
+
+  --emerald-900: #064E3B;
+  --emerald-800: #065F46;
+  --emerald-700: #047857;
+  --emerald-600: #0D9C70;
+  --emerald-500: #10B786;
+  --emerald-400: #34D3A3;
+  --emerald-300: #6EE7B7;
+  --emerald-200: #A7F3D0;
+  --emerald-100: #D1FAE5;
+  --emerald-50:  #ECFDF5;
+
+  /* ---------- Accent & semantic ---------- */
+  --amber-900: #78350F;
+  --amber-800: #92400E;
+  --amber-700: #B45309;
+  --amber-600: #D97706;
+  --amber-500: #F59E0B;
+  --amber-400: #FBBF24;
+  --amber-300: #FCD34D;
+  --amber-200: #FDE68A;
+  --amber-100: #FEF3C7;
+  --amber-50:  #FFFBEB;
+
+  --red-900: #7F1D1D;
+  --red-800: #991B1B;
+  --red-700: #B91C1C;
+  --red-600: #DC2626;
+  --red-500: #EF4444;
+  --red-300: #FCA5A5;
+  --red-200: #FECACA;
+  --red-100: #FEE2E2;
+  --red-50:  #FEF2F2;
+
+  --blue-900: #1E3A8A;
+  --blue-800: #1E40AF;
+  --blue-700: #1D4ED8;
+  --blue-500: #3B82F6;
+  --blue-200: #BFDBFE;
+  --blue-100: #DBEAFE;
+  --blue-50:  #EFF6FF;
+
+  --indigo-900: #312E81;
+  --indigo-800: #3730A3;
+  --indigo-700: #4338CA;
+  --indigo-600: #4F46E5;
+  --indigo-200: #C7D2FE;
+  --indigo-100: #E0E7FF;
+  --indigo-50:  #EEF2FF;
+
+  /* ---------- Neutral slate scale ---------- */
+  --slate-950: #020617;
+  --slate-900: #0F172A;
+  --slate-800: #1E293B;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748B;
+  --slate-400: #94A3B8;
+  --slate-300: #CBD5E1;
+  --slate-200: #E2E8F0;
+  --slate-150: #EDF1F5;
+  --slate-100: #F1F5F9;
+  --slate-50:  #F8FAFC;
+
+  /* ---------- Aliases referenciados pelos módulos (preservar) ---------- */
+  --bg-main: #F6F8FB;
   --bg-card: #FFFFFF;
-  --primary: #0B4F6C;
-  --primary-soft: #E8F4FD;
-  --primary-hover: #F0F7FF;
-  --secondary: #1D9E75;
+  --surface: #FFFFFF;
+  --surface-muted: var(--slate-50);
+  --surface-raised: #FFFFFF;
+
+  --primary: var(--petrol-700);
+  --primary-strong: var(--petrol-800);
+  --primary-deep: var(--petrol-900);
+  --primary-soft: var(--petrol-100);
+  --primary-hover: var(--petrol-50);
+  --primary-contrast: #FFFFFF;
+
+  --secondary: var(--emerald-600);
+  --secondary-strong: var(--emerald-700);
+  --secondary-soft: var(--emerald-50);
+
+  --accent: var(--amber-500);
+  --accent-soft: var(--amber-50);
+
   --alert: #C0392B;
-  --text-dark: #2C3E50;
-  --text-muted: #6C757D;
-  --border: #DEE2E6;
-  --border-soft: #E9ECEF;
+  --alert-strong: var(--red-800);
+  --alert-soft: var(--red-50);
 
-  --badge-green-bg: #D1FAE5;
-  --badge-green-fg: #065F46;
-  --badge-amber-bg: #FEF3C7;
-  --badge-amber-fg: #92400E;
-  --badge-red-bg: #FEE2E2;
-  --badge-red-fg: #991B1B;
-  --badge-blue-bg: #DBEAFE;
-  --badge-blue-fg: #1E40AF;
-  --badge-indigo-bg: #E0E7FF;
-  --badge-indigo-fg: #3730A3;
+  --text-strong: var(--slate-900);
+  --text-dark: var(--slate-800);
+  --text-body: var(--slate-700);
+  --text-muted: var(--slate-500);
+  --text-faint: var(--slate-400);
+  --text-inverse: #FFFFFF;
 
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-hover: 0 4px 12px rgba(11, 79, 108, 0.08);
+  --border: var(--slate-200);
+  --border-soft: var(--slate-150);
+  --border-strong: var(--slate-300);
+  --border-primary: rgba(14, 91, 120, 0.18);
+
+  /* ---------- Badges (compatíveis com módulos) ---------- */
+  --badge-green-bg: var(--emerald-100);
+  --badge-green-fg: var(--emerald-800);
+  --badge-amber-bg: var(--amber-100);
+  --badge-amber-fg: var(--amber-800);
+  --badge-red-bg:   var(--red-100);
+  --badge-red-fg:   var(--red-800);
+  --badge-blue-bg:  var(--blue-100);
+  --badge-blue-fg:  var(--blue-800);
+  --badge-indigo-bg: var(--indigo-100);
+  --badge-indigo-fg: var(--indigo-800);
+
+  /* ---------- Gradients ---------- */
+  --gradient-brand: linear-gradient(135deg, var(--petrol-800) 0%, var(--petrol-600) 60%, var(--emerald-700) 130%);
+  --gradient-brand-soft: linear-gradient(135deg, rgba(10,71,97,0.04) 0%, rgba(16,183,134,0.06) 100%);
+  --gradient-header: linear-gradient(120deg, var(--petrol-900) 0%, var(--petrol-700) 55%, var(--petrol-600) 100%);
+  --gradient-surface: linear-gradient(180deg, #FFFFFF 0%, var(--slate-50) 100%);
+  --gradient-bg: radial-gradient(1200px 600px at 12% -10%, rgba(14,91,120,0.06), transparent 55%),
+                 radial-gradient(1000px 520px at 100% 0%, rgba(16,183,134,0.05), transparent 50%),
+                 linear-gradient(180deg, #F6F8FB 0%, #F2F5F9 100%);
+  --gradient-emerald: linear-gradient(135deg, var(--emerald-600) 0%, var(--emerald-700) 100%);
+  --gradient-amber: linear-gradient(135deg, var(--amber-400) 0%, var(--amber-600) 100%);
+  --gradient-danger: linear-gradient(135deg, var(--red-500) 0%, var(--red-700) 100%);
+
+  /* ---------- Shadow system (em camadas) ---------- */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.08), 0 4px 10px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 24px 48px rgba(15, 23, 42, 0.12), 0 8px 16px rgba(15, 23, 42, 0.06);
+  --shadow-brand: 0 10px 28px rgba(10, 71, 97, 0.18), 0 4px 10px rgba(10, 71, 97, 0.10);
+  --shadow-emerald: 0 10px 24px rgba(13, 156, 112, 0.22), 0 3px 8px rgba(13, 156, 112, 0.10);
+  --shadow-alert: 0 10px 24px rgba(192, 57, 43, 0.22), 0 3px 8px rgba(192, 57, 43, 0.10);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --ring-primary: 0 0 0 4px rgba(14, 91, 120, 0.16);
+  --ring-emerald: 0 0 0 4px rgba(16, 183, 134, 0.18);
+  --ring-danger:  0 0 0 4px rgba(220, 38, 38, 0.18);
+
+  /* Retro-compat (aliases usados em módulos) */
+  --shadow-card: var(--shadow-sm);
+  --shadow-hover: var(--shadow-md);
+
+  /* ---------- Radius ---------- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-pill: 999px;
+
+  /* ---------- Spacing scale (múltiplos de 4) ---------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* ---------- Typography ---------- */
+  --font-display: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --fs-2xs: 10.5px;
+  --fs-xs:  11.5px;
+  --fs-sm:  12.5px;
+  --fs-base: 14px;
+  --fs-md:  15px;
+  --fs-lg:  16px;
+  --fs-xl:  18px;
+  --fs-2xl: 21px;
+  --fs-3xl: 26px;
+  --fs-4xl: 32px;
+  --fs-5xl: 40px;
+  --fs-6xl: 48px;
+
+  --lh-tight: 1.18;
+  --lh-snug:  1.32;
+  --lh-base:  1.55;
+  --lh-relaxed: 1.7;
+
+  --tracking-tight: -0.018em;
+  --tracking-snug:  -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide:  0.04em;
+  --tracking-wider: 0.08em;
+  --tracking-widest: 0.14em;
+
+  /* ---------- Motion ---------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 360ms;
+
+  /* ---------- Layout ---------- */
+  --header-h: 72px;
+  --footer-h: 52px;
+  --sidebar-w: 260px;
+  --content-max: 1040px;
+  --content-wide: 1320px;
 }
 
-* { box-sizing: border-box; }
+/* ---------- Reset & global base ---------- */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+*::selection {
+  background: rgba(16, 183, 134, 0.22);
+  color: var(--petrol-900);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
 
 html, body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  background: var(--bg-main);
-  color: var(--text-dark);
-  font-size: 15px;
-  line-height: 1.6;
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  color: var(--text-body);
+  background: var(--gradient-bg);
+  background-attachment: fixed;
+  font-feature-settings: 'cv11', 'ss01', 'ss03', 'kern';
+  font-variant-numeric: proportional-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-#root { min-height: 100vh; }
+body { min-height: 100vh; }
+
+#root {
+  min-height: 100vh;
+  isolation: isolate;
+}
+
+/* Typographic primitives (defaults; componentes podem sobrescrever) */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  color: var(--text-strong);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-snug);
+  font-weight: 700;
+  text-wrap: balance;
+}
+h1 { font-size: var(--fs-5xl); letter-spacing: var(--tracking-tight); }
+h2 { font-size: var(--fs-4xl); letter-spacing: var(--tracking-tight); }
+h3 { font-size: var(--fs-2xl); font-weight: 650; }
+h4 { font-size: var(--fs-xl);  font-weight: 650; }
+h5 { font-size: var(--fs-lg);  font-weight: 650; }
+h6 { font-size: var(--fs-base); font-weight: 650; letter-spacing: var(--tracking-wide); text-transform: uppercase; }
+
+p {
+  margin: 0 0 var(--space-3);
+  line-height: var(--lh-base);
+  color: var(--text-body);
+  text-wrap: pretty;
+}
+p.lead {
+  font-size: var(--fs-md);
+  color: var(--text-dark);
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color var(--dur-fast) var(--ease-out),
+              text-decoration-color var(--dur-fast) var(--ease-out);
+}
+a:hover {
+  color: var(--secondary-strong);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+}
+a:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+small { font-size: var(--fs-sm); color: var(--text-muted); }
+strong, b { font-weight: 650; color: var(--text-dark); }
+em, i { font-style: italic; }
+code, kbd, samp {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--slate-100);
+  color: var(--slate-800);
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+}
+
+img, svg, video { max-width: 100%; display: block; }
+svg { flex-shrink: 0; }
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+button { cursor: pointer; }
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: var(--space-6) 0;
+}
+
+ul, ol { line-height: var(--lh-base); color: var(--text-body); }
+
+/* Scrollbars (WebKit) */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--slate-200);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--slate-300);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+/* Motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus ring default para elementos sem estilo próprio */
+:where(button, [role="button"], input, select, textarea):focus-visible {
+  outline: none;
+  box-shadow: var(--ring-primary);
+  border-radius: var(--radius-sm);
+}
+
+/* Keyframes globais usados por componentes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseSoft {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 183, 134, 0.35); }
+  50%      { box-shadow: 0 0 0 6px rgba(16, 183, 134, 0); }
+}
 
 /* ---------- Layout ---------- */
 .app-shell {
