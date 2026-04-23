@@ -55,6 +55,40 @@ function fmtBRL(n) {
   return `R$ ${(n * 1000).toFixed(0)} mil`;
 }
 
+// Valores baseados no CAPEX médio da tabela do Módulo 1 × porte típico do tipo
+const PRESETS = [
+  {
+    label: "CGH", color: "blue",
+    inv: 20,
+    sublabel: "~1,5 MW · R$ 20 mi",
+    tip: "Ref.: R$ 7–16 mi/MW (projetos reais 2020–2024). Projeto típico: 1–2 MW."
+  },
+  {
+    label: "PCH", color: "blue",
+    inv: 120,
+    sublabel: "~15 MW · R$ 120 mi",
+    tip: "Ref.: R$ 5–11 mi/MW (ABRAPCH + EPE PDE 2034). Projeto típico: 10–20 MW."
+  },
+  {
+    label: "EOL", color: "green",
+    inv: 450,
+    sublabel: "~80 MW · R$ 450 mi",
+    tip: "Ref.: R$ 4,4–7 mi/MW (ABEEólica 2025 + EPE). Projeto típico: 50–120 MW."
+  },
+  {
+    label: "UFV", color: "amber",
+    inv: 320,
+    sublabel: "~80 MW · R$ 320 mi",
+    tip: "Ref.: R$ 3–5,5 mi/MW (EPE PDE 2034). Projeto utility-scale típico: 50–100 MW."
+  },
+  {
+    label: "UHE", color: "indigo",
+    inv: 520,
+    sublabel: "~80 MW · R$ 520 mi",
+    tip: "Ref.: R$ 4–9 mi/MW (EPE). Projeto de médio porte: 50–120 MW."
+  }
+];
+
 function Calculator() {
   const [inv, setInv] = useState(400);
   const [meses, setMeses] = useState(6);
@@ -65,15 +99,32 @@ function Calculator() {
     const mw = inv / 4;
     const pld = mw * 720 * 200 * meses / 1_000_000;
     const total = multa + garantia + pld;
-    return { multa, garantia, pld, total };
+    return { multa, garantia, pld, total, mw };
   }, [inv, meses]);
 
   return (
     <div className="calculator">
+      <div className="calc-presets">
+        <span className="cp-label">Setup rápido por tipo:</span>
+        {PRESETS.map(p => (
+          <button
+            key={p.label}
+            className={`preset-btn pb-${p.color}${inv === p.inv ? " pb-active" : ""}`}
+            onClick={() => setInv(p.inv)}
+            title={p.tip}
+          >
+            <span className="pb-sigla">{p.label}</span>
+            <span className="pb-sub">{p.sublabel}</span>
+          </button>
+        ))}
+      </div>
       <div className="calc-inputs">
         <div className="slider-row">
           <label>Valor do investimento do projeto</label>
-          <div className="value-display">R$ {inv.toLocaleString("pt-BR")} milhões</div>
+          <div className="value-display">
+            R$ {inv.toLocaleString("pt-BR")} milhões
+            <span className="value-mw">≈ {calc.mw.toFixed(0)} MW</span>
+          </div>
           <input type="range" min="10" max="2000" step="10" value={inv} onChange={e => setInv(+e.target.value)} />
           <div className="slider-meta"><span>R$ 10 mi</span><span>R$ 2 bi</span></div>
         </div>
@@ -176,6 +227,52 @@ function ModulePenalidades() {
       <Callout>
         Esta estimativa ilustra a ordem de grandeza do risco. <strong>O serviço de assessoria regulatória custa uma fração desse valor</strong> — e atua preventivamente, antes que as penalidades se consolidem.
       </Callout>
+
+      <div className="pld-explainer">
+        <div className="pld-header">
+          <span className="pld-badge">Conceito regulatório</span>
+          <span className="pld-title">O que é o PLD e como calculamos a exposição</span>
+        </div>
+        <div className="pld-body">
+          <div className="pld-col">
+            <div className="pld-col-title">O que é o PLD</div>
+            <p>
+              O <strong>Preço de Liquidação das Diferenças (PLD)</strong> é o preço do mercado spot de energia elétrica no Brasil, calculado semanalmente pela <strong>CCEE</strong> (Câmara de Comercialização de Energia Elétrica) com base no custo marginal de operação do sistema.
+            </p>
+            <p>
+              Quando uma usina não entrega a energia que contratou — por atraso na entrada em operação, por exemplo — ela precisa <em>comprar</em> essa energia no mercado spot ao PLD vigente para honrar seus contratos. Em períodos de estresse hídrico ou demanda elevada, o PLD pode disparar para a banda máxima regulatória, que atualmente pode superar <strong>R$ 1.000/MWh</strong>.
+            </p>
+            <p className="pld-note-inline">
+              Historicamente, o PLD médio anual no Brasil oscila entre <strong>R$ 100 e R$ 600/MWh</strong>. A calculadora usa R$ 200/MWh como referência conservadora de médio prazo.
+            </p>
+          </div>
+          <div className="pld-col pld-col-formula">
+            <div className="pld-col-title">Como calculamos a exposição estimada</div>
+            <div className="pld-formula-box">
+              <div className="pld-formula-row">
+                <span className="pf-label">Potência estimada</span>
+                <span className="pf-expr">= Investimento ÷ R$ 4 mi/MW</span>
+              </div>
+              <div className="pld-formula-row">
+                <span className="pf-label">Horas por mês</span>
+                <span className="pf-expr">= 720 h (30 dias × 24h)</span>
+              </div>
+              <div className="pld-formula-row">
+                <span className="pf-label">PLD de referência</span>
+                <span className="pf-expr">= R$ 200/MWh (média histórica)</span>
+              </div>
+              <div className="pld-formula-divider" />
+              <div className="pld-formula-row pf-total">
+                <span className="pf-label">Exposição ao PLD</span>
+                <span className="pf-expr">= MW × 720 × R$ 200 × meses</span>
+              </div>
+            </div>
+            <p className="pld-formula-note">
+              O fator R$ 4 mi/MW é uma referência média para projetos renováveis no Brasil. Use os botões de <em>setup rápido</em> acima para ajustar ao CAPEX real de cada tipo de usina.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

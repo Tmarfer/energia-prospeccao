@@ -129,11 +129,20 @@ function ModuleRaliePanel() {
       if (filters.tipo) apiFilters.SigTipoGeracao = filters.tipo;
       if (filters.situacao) apiFilters.DscSituacaoObra = filters.situacao;
       if (filters.viabilidade) apiFilters.DscViabilidade = filters.viabilidade;
+      const hasFilters = Object.keys(apiFilters).length > 0;
+
+      // "Todos": primeiro busca o total, depois traz tudo de uma vez
+      let actualLimit = limit;
+      if (limit === 0) {
+        const countRes = await ckanQuery({ q: filters.q || "", limit: 1, filters: hasFilters ? apiFilters : null });
+        if (!countRes || !countRes.success) throw new Error("Resposta inválida da API");
+        actualLimit = countRes.result.total || 1000;
+      }
 
       const res = await ckanQuery({
         q: filters.q || "",
-        limit,
-        filters: Object.keys(apiFilters).length ? apiFilters : null
+        limit: actualLimit,
+        filters: hasFilters ? apiFilters : null
       });
       if (!res || !res.success) throw new Error("Resposta inválida da API");
       const records = (res.result && res.result.records) || [];
@@ -238,6 +247,7 @@ function ModuleRaliePanel() {
             <option value={100}>100</option>
             <option value={250}>250</option>
             <option value={500}>500</option>
+            <option value={0}>Todos</option>
           </select>
         </div>
         <div className="f f-actions">
@@ -334,6 +344,98 @@ function ModuleRaliePanel() {
 
       <div className="panel-foot">
         Fonte: <a href="https://dadosabertos.aneel.gov.br/dataset/ralie-relatorio-de-acompanhamento-da-expansao-da-oferta-de-geracao-de-energia-eletrica" target="_blank" rel="noreferrer">ANEEL · Dados Abertos · RALIE</a> — consulta via API CKAN. Score próprio baseado em situação da obra, viabilidade, cronograma e pendências de LI/CUST.
+      </div>
+
+      <div className="score-legend">
+        <div className="sl-header">
+          <span className="sl-badge">Score 0 – 100</span>
+          <span className="sl-title">Como o Score de urgência regulatória é calculado</span>
+        </div>
+        <p className="sl-intro">
+          Cada empreendimento recebe uma pontuação automática com base em sinais públicos do RALIE. Quanto maior o score, maior a exposição regulatória do empreendedor — e maior a urgência de abordagem comercial. O cálculo é próprio do escritório; não é um índice oficial da ANEEL.
+        </p>
+        <div className="sl-body">
+          <div className="sl-col">
+            <div className="sl-col-title">Sinais de urgência e seus pesos</div>
+            <table className="sl-table">
+              <thead>
+                <tr><th>Sinal (campo RALIE)</th><th>Peso</th><th>Lógica</th></tr>
+              </thead>
+              <tbody>
+                <tr className="sl-red">
+                  <td><strong>Obra paralisada</strong></td>
+                  <td><span className="sl-weight">+40</span></td>
+                  <td>Risco máximo — obras paradas, embargo ou falha de execução</td>
+                </tr>
+                <tr>
+                  <td><strong>Obra não iniciada</strong></td>
+                  <td><span className="sl-weight">+20</span></td>
+                  <td>Cronograma já corre; empreendedor pode não ter percebido</td>
+                </tr>
+                <tr>
+                  <td><strong>Obra em andamento</strong></td>
+                  <td><span className="sl-weight">+15</span></td>
+                  <td>Acompanhamento preventivo — janela de conformidade aberta</td>
+                </tr>
+                <tr className="sl-red">
+                  <td><strong>Viabilidade Baixa</strong></td>
+                  <td><span className="sl-weight">+30</span></td>
+                  <td>ANEEL não acredita na conclusão — risco de cassação iminente</td>
+                </tr>
+                <tr>
+                  <td><strong>Viabilidade Média</strong></td>
+                  <td><span className="sl-weight">+18</span></td>
+                  <td>Risco crescente — projeto em zona de atenção da fiscalização</td>
+                </tr>
+                <tr className="sl-amber">
+                  <td><strong>Cronograma em atraso</strong></td>
+                  <td><span className="sl-weight">+15</span></td>
+                  <td>Penalidade ativa ou iminente por descumprimento de prazo</td>
+                </tr>
+                <tr className="sl-amber">
+                  <td><strong>LI com pendência</strong></td>
+                  <td><span className="sl-weight">+8</span></td>
+                  <td>Licença de Instalação não vigente nem emitida</td>
+                </tr>
+                <tr className="sl-amber">
+                  <td><strong>CUST sem vigência</strong></td>
+                  <td><span className="sl-weight">+7</span></td>
+                  <td>Contrato de conexão não assinado ou sem vigência ativa</td>
+                </tr>
+                <tr>
+                  <td colSpan={1} style={{color:"var(--text-muted)", fontSize:12}}>Máximo acumulado</td>
+                  <td><span className="sl-weight sl-max">100</span></td>
+                  <td style={{color:"var(--text-muted)", fontSize:12}}>Pontos são somados e limitados a 100</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="sl-col sl-col-tiers">
+            <div className="sl-col-title">Classificação final do lead</div>
+            <div className="sl-tiers">
+              <div className="sl-tier tier-red">
+                <div className="slt-range">≥ 60</div>
+                <div className="slt-label">Quente</div>
+                <div className="slt-desc">Abordagem imediata — risco ativo grave. Alta probabilidade de receptividade.</div>
+              </div>
+              <div className="sl-tier tier-amber">
+                <div className="slt-range">35 – 59</div>
+                <div className="slt-label">Morno</div>
+                <div className="slt-desc">Risco real mas não crítico. Abordar dentro de 30–60 dias.</div>
+              </div>
+              <div className="sl-tier tier-blue">
+                <div className="slt-range">15 – 34</div>
+                <div className="slt-label">Prospecção</div>
+                <div className="slt-desc">Risco em formação. Campanha de relacionamento e posicionamento preventivo.</div>
+              </div>
+              <div className="sl-tier tier-neutral">
+                <div className="slt-range">0 – 14</div>
+                <div className="slt-label">Monitorar</div>
+                <div className="slt-desc">Sem sinais de urgência ativos. Acompanhar mensalmente no RALIE.</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
