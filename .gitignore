@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# Claude Code (settings locais com paths absolutos)
+.claude/
+
+# Variáveis de ambiente (boa prática, mesmo sem .env atual)
+.env
+.env.*
+!.env.example
+
+# Node.js (caso venha a ser usado futuramente)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
