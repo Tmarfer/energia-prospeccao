@@ -96,6 +96,69 @@
         <p class="texto-muted">Inclui biomassa, gás natural, carvão e nuclear.</p>
       </div>
     </div>
+
+    <table class="tipo-table">
+      <thead>
+        <tr>
+          <th>Sigla</th>
+          <th>Fonte</th>
+          <th>Porte</th>
+          <th>Regime regulatório</th>
+          <th>Prazo típico</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-hidrica">
+          <td>CGH</td>
+          <td>Hídrica</td>
+          <td>≤ 5 MW</td>
+          <td><span class="tipo-regime regime-reg">Registro simplificado</span></td>
+          <td>12–24 meses</td>
+        </tr>
+        <tr class="row-hidrica">
+          <td>PCH</td>
+          <td>Hídrica</td>
+          <td>&gt; 5 MW até 30 MW</td>
+          <td><span class="tipo-regime regime-auth">Autorização ANEEL</span></td>
+          <td>24–48 meses</td>
+        </tr>
+        <tr class="row-hidrica">
+          <td>UHE</td>
+          <td>Hídrica</td>
+          <td>&gt; 30 MW</td>
+          <td><span class="tipo-regime regime-auth">Autorização</span> / <span class="tipo-regime regime-conc">Concessão</span></td>
+          <td>48–96+ meses</td>
+        </tr>
+        <tr class="row-eolica">
+          <td>EOL</td>
+          <td>Eólica</td>
+          <td>50–300 MW típico</td>
+          <td><span class="tipo-regime regime-auth">Autorização ANEEL</span></td>
+          <td>18–30 meses</td>
+        </tr>
+        <tr class="row-solar">
+          <td>UFV</td>
+          <td>Solar</td>
+          <td>≥ 1 MW utility-scale</td>
+          <td><span class="tipo-regime regime-auth">Autorização ANEEL</span></td>
+          <td>12–24 meses</td>
+        </tr>
+        <tr class="row-termica">
+          <td>UTE</td>
+          <td>Gás / Biomassa</td>
+          <td>Sem limite</td>
+          <td><span class="tipo-regime regime-auth">Autorização</span> / <span class="tipo-regime regime-conc">Concessão</span></td>
+          <td>Variável</td>
+        </tr>
+        <tr class="row-nuclear">
+          <td>UTN</td>
+          <td>Nuclear</td>
+          <td>Grande porte</td>
+          <td><span class="tipo-regime regime-especial">Concessão especial CNEN</span></td>
+          <td>10+ anos</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- Slide 3 — Penalidades -->
@@ -172,15 +235,61 @@
           <li>Postergação formal do cronograma</li>
         </ul>
       </div>
-      <div class="card">
-        <div class="kicker">Fluxo processual</div>
-        <ul class="topicos">
-          <li>Identificação do evento excludente</li>
-          <li>Coleta de documentação comprobatória</li>
-          <li>Construção do nexo causal (peça técnica)</li>
-          <li>Protocolo na ANEEL — SFG + SCG</li>
-          <li>Recurso à Diretoria se indeferido</li>
-        </ul>
+    </div>
+
+    <!-- Diagrama de fluxo processual -->
+    <div class="kicker" style="margin-top: 28px;">Fluxo processual</div>
+
+    <div class="flow-diagram">
+
+      <div class="flow-step">
+        <div class="flow-step-box">
+          <div class="flow-step-num">1</div>
+          <div class="flow-step-label">Identificação</div>
+          <div class="flow-step-sub">Qual causa excludente se aplica?</div>
+        </div>
+      </div>
+
+      <div class="flow-connector">→</div>
+
+      <div class="flow-step step-amber">
+        <div class="flow-step-box">
+          <div class="flow-step-num">2</div>
+          <div class="flow-step-label">Documentação</div>
+          <div class="flow-step-sub">Laudos, ofícios, protocolos, registros</div>
+        </div>
+      </div>
+
+      <div class="flow-connector">→</div>
+
+      <div class="flow-step step-green">
+        <div class="flow-step-box">
+          <div class="flow-step-num">3</div>
+          <div class="flow-step-label">Nexo Causal</div>
+          <div class="flow-step-sub">Peça técnica: evento → atraso → magnitude</div>
+        </div>
+      </div>
+
+      <div class="flow-connector">→</div>
+
+      <div class="flow-step step-blue">
+        <div class="flow-step-box">
+          <div class="flow-step-num">4</div>
+          <div class="flow-step-label">Protocolo ANEEL</div>
+          <div class="flow-step-sub">SFG + SCG · 30–90 dias</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="flow-outcomes">
+      <div class="flow-outcome outcome-ok">
+        <span class="outcome-label">✓ Deferido</span>
+        Isenção de penalidades + postergação formal do cronograma
+      </div>
+      <div class="flow-outcome outcome-no">
+        <span class="outcome-label">✗ Indeferido</span>
+        Recurso à Diretoria da ANEEL — última instância administrativa
       </div>
     </div>
 

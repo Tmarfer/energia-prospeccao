@@ -342,6 +342,192 @@ ul.topicos li::before {
   margin-top: 1px;
 }
 
+/* ── Tabela de tipologia ── */
+.tipo-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--space-6);
+  font-size: var(--fs-sm);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.tipo-table thead tr {
+  background: var(--petrol-800);
+  color: var(--text-inverse);
+}
+
+.tipo-table thead th {
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.tipo-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.tipo-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.tipo-table tbody tr:hover {
+  background: var(--slate-50);
+}
+
+.tipo-table td {
+  padding: 10px 14px;
+  vertical-align: middle;
+  color: var(--text-body);
+  line-height: var(--lh-base);
+}
+
+.tipo-table td:first-child {
+  border-left: 4px solid transparent;
+  font-weight: 700;
+  font-size: var(--fs-md);
+  color: var(--text-strong);
+  white-space: nowrap;
+}
+
+.tipo-table .row-hidrica  td:first-child { border-color: var(--blue-500); }
+.tipo-table .row-eolica   td:first-child { border-color: var(--emerald-500); }
+.tipo-table .row-solar    td:first-child { border-color: var(--amber-500); }
+.tipo-table .row-termica  td:first-child { border-color: var(--slate-400); }
+.tipo-table .row-nuclear  td:first-child { border-color: var(--indigo-500); }
+
+.tipo-regime {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.regime-auth    { background: var(--emerald-100); color: var(--emerald-800); }
+.regime-reg     { background: var(--blue-100);    color: var(--blue-800); }
+.regime-conc    { background: var(--indigo-100);  color: var(--indigo-800); }
+.regime-especial{ background: var(--amber-100);   color: var(--amber-800); }
+
+/* ── Diagrama de fluxo (Excludente) ── */
+.flow-diagram {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: var(--space-6) 0;
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+.flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 120px;
+}
+
+.flow-step-box {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  text-align: center;
+  width: 100%;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.flow-step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--petrol-700);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.flow-step-label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-dark);
+  line-height: 1.3;
+}
+
+.flow-step-sub {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.flow-step.step-amber .flow-step-num { background: var(--amber-600); }
+.flow-step.step-green  .flow-step-num { background: var(--emerald-600); }
+.flow-step.step-blue   .flow-step-num { background: var(--blue-700); }
+
+.flow-step.step-amber .flow-step-box { border-color: var(--amber-300);  background: var(--amber-50); }
+.flow-step.step-green  .flow-step-box { border-color: var(--emerald-300); background: var(--emerald-50); }
+.flow-step.step-blue   .flow-step-box { border-color: var(--blue-200);   background: var(--blue-50); }
+
+.flow-connector {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  color: var(--slate-400);
+  font-size: 18px;
+  flex-shrink: 0;
+  align-self: center;
+  margin-top: -4px;
+}
+
+.flow-outcomes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.flow-outcome {
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+}
+
+.outcome-ok {
+  background: var(--emerald-50);
+  border: 1.5px solid var(--emerald-300);
+  color: var(--emerald-800);
+}
+
+.outcome-no {
+  background: var(--red-50);
+  border: 1.5px solid var(--red-300);
+  color: var(--red-800);
+}
+
+.outcome-label {
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+  font-size: var(--fs-base);
+}
+
 /* ── Responsivo ── */
 @media (max-width: 600px) {
   .slide {
