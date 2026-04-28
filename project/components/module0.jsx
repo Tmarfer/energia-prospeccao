@@ -1,34 +1,32 @@
 /* global React, UI */
 const { useState, useEffect } = React;
-const { Icon } = window.UI;
+const { Icon, ckanSQL } = window.UI;
 
 // ── Market stats via ANEEL CKAN ──
 const RALIE_RES_ID = "4a615df8-4c25-48fa-bbea-873a36a79518";
-const CKAN_URL = "https://dadosabertos.aneel.gov.br/api/3/action/datastore_search";
 
 // CAPEX médio ponderado para renováveis no Brasil (R$ milhões/MW instalado, ref. 2025)
 // Solar utility-scale: ~R$ 4,5M/MW · Eólica: ~R$ 7,0M/MW · PCH: ~R$ 6,0M/MW → média ~R$ 5,5M/MW
 const CAPEX_POR_MW = 5.5; // R$ milhões
 
-function ckanFetch(params, timeoutMs = 60000) {
-  return new Promise((resolve, reject) => {
-    const cb = "__mkt_cb_" + Math.random().toString(36).slice(2);
-    const qs = new URLSearchParams({ ...params, callback: cb }).toString();
-    const s = document.createElement("script");
-    const t = setTimeout(() => { delete window[cb]; s.remove(); reject(new Error("timeout")); }, timeoutMs);
-    window[cb] = d => { clearTimeout(t); delete window[cb]; s.remove(); resolve(d); };
-    s.onerror = () => { clearTimeout(t); delete window[cb]; s.remove(); reject(new Error("network")); };
-    s.src = CKAN_URL + "?" + qs;
-    document.head.appendChild(s);
-  });
-}
+// Referência hardcoded do painel "Tendência de Expansão" RALIE/ANEEL (Abr/2026)
+// Usado como fallback se o endpoint SQL não estiver disponível
+const RALIE_REF = { usinas: 2742, mw: 118839, data: "Abr/2026" };
 
-function fmtBilhoes(reaisMilhoes) {
-  // converte R$ milhões → R$ bilhões formatado
-  const bilhoes = reaisMilhoes / 1000;
+function fmtBilhoes(bilhoes) {
   return bilhoes >= 100
     ? bilhoes.toLocaleString("pt-BR", { maximumFractionDigits: 0 })
     : bilhoes.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+}
+
+function fmtData(s) {
+  if (!s) return "—";
+  const d = String(s).slice(0, 10);
+  if (/^\d{4}-\d{2}-\d{2}/.test(d)) {
+    const [y, m, dd] = d.split("-");
+    return `${dd}/${m}/${y}`;
+  }
+  return d;
 }
 
 /* ── Ciclo de vida ── */
@@ -125,64 +123,39 @@ function ModuleHome({ goTo }) {
 
   useEffect(() => {
     (async () => {
+      // SQL agregado: conta usinas únicas e soma MW na última publicação do RALIE,
+      // excluindo projetos já concluídos (= Tendência de Expansão)
+      const sql = [
+        `SELECT count(*) AS n,`,
+        `       sum(cast("MdaPotenciaOutorgadaKw" AS float))/1000 AS mw,`,
+        `       max("DatRalie") AS dt`,
+        `FROM "${RALIE_RES_ID}"`,
+        `WHERE "DscSituacaoObra" != 'Conclu\u00edda'`,
+        `  AND "DatRalie" = (SELECT max("DatRalie") FROM "${RALIE_RES_ID}")`
+      ].join(" ");
+
       try {
-        // Passo 1: total de registros brutos
-        const countRes = await ckanFetch({ resource_id: RALIE_RES_ID, limit: 1 });
-        const totalBruto = countRes?.result?.total || 0;
-
-        // Passo 2: buscar até 500 registros por batch, 2 batchs em paralelo = 1000 amostras
-        const BATCH = 500;
-        const N_BATCHES = 2;
-        const batchPromises = Array.from({ length: N_BATCHES }, (_, i) =>
-          ckanFetch({ resource_id: RALIE_RES_ID, limit: BATCH, offset: i * BATCH })
-        );
-        const batchResults = await Promise.all(batchPromises);
-
-        // Dedup por CEG e soma MW
-        const seen = new Map();
-        for (const res of batchResults) {
-          for (const r of (res?.result?.records || [])) {
-            const key = r.CodCEG || r.IdeNucleoCEG || r._id;
-            const prev = seen.get(key);
-            if (!prev || String(r.DatRalie || "") > String(prev.DatRalie || "")) {
-              seen.set(key, r);
-            }
-          }
+        const res = await ckanSQL(sql);
+        if (res?.success && res.result?.records?.[0]) {
+          const r = res.result.records[0];
+          const usinas = Math.round(parseFloat(r.n || 0));
+          const mw     = Math.round(parseFloat(r.mw || 0));
+          const capexBilhoes = (mw * CAPEX_POR_MW) / 1000;
+          setMktStats({ usinas, mw, capexBilhoes, dataConsulta: fmtData(r.dt), isFallback: false });
+          return;
         }
+      } catch { /* cai no fallback abaixo */ }
 
-        let totalMW = 0;
-        let latestRalie = "";
-        for (const r of seen.values()) {
-          const kw = parseFloat(String(r.MdaPotenciaOutorgadaKw || "").replace(",", "."));
-          if (isFinite(kw)) totalMW += kw / 1000;
-          if (r.DatRalie && String(r.DatRalie) > latestRalie) latestRalie = String(r.DatRalie);
-        }
-
-        // Extrapola MW ao universo completo proporcionalmente (amostra = seen.size, universo = totalBruto)
-        const sampleSize = seen.size || 1;
-        const factor = totalBruto / sampleSize;
-        const totalMWExt = Math.round(totalMW * factor);
-        const capexEstimado = totalMWExt * CAPEX_POR_MW; // R$ milhões
-
-        // Formata data RALIE (yyyy-mm-dd ou similar)
-        let dataConsulta = "—";
-        if (latestRalie) {
-          const s = latestRalie.slice(0, 10);
-          if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
-            const [y, m, d] = s.split("-");
-            dataConsulta = `${d}/${m}/${y}`;
-          } else {
-            dataConsulta = latestRalie.slice(0, 10);
-          }
-        }
-
-        setMktStats({ totalMW: totalMWExt, capexBilhoes: capexEstimado / 1000, dataConsulta });
-      } catch {
-        setMktStats(null);
-      } finally {
-        setMktLoading(false);
-      }
-    })();
+      // Fallback: valores de referência do painel RALIE (Abr/2026)
+      const mw = RALIE_REF.mw;
+      setMktStats({
+        usinas: RALIE_REF.usinas,
+        mw,
+        capexBilhoes: (mw * CAPEX_POR_MW) / 1000,
+        dataConsulta: RALIE_REF.data,
+        isFallback: true
+      });
+    })().finally(() => setMktLoading(false));
   }, []);
 
   const activePhase = CYCLE_PHASES.find(p => p.id === openPhase);
@@ -217,31 +190,40 @@ function ModuleHome({ goTo }) {
         </div>
 
         {mktLoading ? (
-          <div className="mkt-opp-loading">Consultando base ANEEL…</div>
+          <div className="mkt-opp-loading">Consultando base RALIE/ANEEL…</div>
         ) : mktStats ? (
           <>
-            <div className="mkt-opp-metrics mkt-opp-metrics-2">
+            <div className="mkt-opp-metrics mkt-opp-metrics-3">
               <div className="mkt-metric mkt-metric-primary">
                 <div className="mkt-m-sup">estimativa de investimento em implantação</div>
                 <div className="mkt-m-value">
-                  R$ {fmtBilhoes(mktStats.capexBilhoes * 1000)}
+                  R$ {fmtBilhoes(mktStats.capexBilhoes)}
                   <span className="mkt-m-unit"> bilhões</span>
                 </div>
                 <div className="mkt-m-label">em projetos ativos de geração elétrica</div>
               </div>
               <div className="mkt-metric mkt-metric-secondary">
-                <div className="mkt-m-sup">potência outorgada em construção</div>
+                <div className="mkt-m-sup">potência outorgada em implantação</div>
                 <div className="mkt-m-value mkt-m-value-sm">
-                  {mktStats.totalMW.toLocaleString("pt-BR")}
+                  {mktStats.mw.toLocaleString("pt-BR")}
                   <span className="mkt-m-unit"> MW</span>
                 </div>
-                <div className="mkt-m-label">capacidade instalada em implantação</div>
+                <div className="mkt-m-label">capacidade a ser instalada (2026–2032+)</div>
+              </div>
+              <div className="mkt-metric mkt-metric-tertiary">
+                <div className="mkt-m-sup">empreendimentos monitorados</div>
+                <div className="mkt-m-value mkt-m-value-sm">
+                  {mktStats.usinas.toLocaleString("pt-BR")}
+                  <span className="mkt-m-unit"> usinas</span>
+                </div>
+                <div className="mkt-m-label">em expansão — potencial de atuação</div>
               </div>
             </div>
             <div className="mkt-opp-footnote">
-              * Estimativa baseada em CAPEX médio ponderado de R$ 5,5 milhões/MW (solar ~R$ 4,5M · eólica ~R$ 7,0M · PCH ~R$ 6,0M, ref. 2025).
-              Dados apurados em consulta ao sistema RALIE da ANEEL em {mktStats.dataConsulta} —{" "}
-              <a href="https://dadosabertos.aneel.gov.br/dataset/ralie-relatorio-de-acompanhamento-da-expansao-da-oferta-de-geracao-de-energia-eletrica" target="_blank" rel="noreferrer">dadosabertos.aneel.gov.br</a>.
+              * Painel <strong>Tendência de Expansão</strong> — RALIE/ANEEL.{" "}
+              {mktStats.isFallback ? `Referência ${mktStats.dataConsulta} (dados offline, consulte o painel ao vivo).` : `Consulta realizada em ${mktStats.dataConsulta}.`}{" "}
+              Estimativa de investimento baseada em CAPEX médio ponderado de R$ 5,5 M/MW (solar ~R$ 4,5M · eólica ~R$ 7,0M · PCH ~R$ 6,0M, ref. 2025).{" "}
+              Fonte: <a href="https://dadosabertos.aneel.gov.br/dataset/ralie-relatorio-de-acompanhamento-da-expansao-da-oferta-de-geracao-de-energia-eletrica" target="_blank" rel="noreferrer">dadosabertos.aneel.gov.br</a>.
             </div>
           </>
         ) : (

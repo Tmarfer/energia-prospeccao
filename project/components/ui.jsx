@@ -94,4 +94,23 @@ function Callout({ children }) {
   return <div className="callout">{children}</div>;
 }
 
-window.UI = { Glossary, Icon, Badge, MetricCard, Callout };
+// ---------- ANEEL CKAN SQL helper (shared) ----------
+// Usa o endpoint datastore_search_sql com JSONP para queries agregadas e filtros NOT IN
+const _CKAN_SQL_URL = "https://dadosabertos.aneel.gov.br/api/3/action/datastore_search_sql";
+function ckanSQL(sql, timeoutMs = 50000) {
+  return new Promise((resolve, reject) => {
+    const cb = "__csql_" + Math.random().toString(36).slice(2);
+    const qs = new URLSearchParams({ sql, callback: cb }).toString();
+    const s = document.createElement("script");
+    const t = setTimeout(() => {
+      delete window[cb]; s.remove();
+      reject(new Error("ckan_sql_timeout"));
+    }, timeoutMs);
+    window[cb] = d => { clearTimeout(t); delete window[cb]; s.remove(); resolve(d); };
+    s.onerror = () => { clearTimeout(t); delete window[cb]; s.remove(); reject(new Error("ckan_sql_network")); };
+    s.src = _CKAN_SQL_URL + "?" + qs;
+    document.head.appendChild(s);
+  });
+}
+
+window.UI = { Glossary, Icon, Badge, MetricCard, Callout, ckanSQL };

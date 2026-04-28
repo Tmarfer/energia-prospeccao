@@ -2898,6 +2898,13 @@ p.lead { font-size: var(--fs-md); color: var(--text-dark); }
 .mkt-opp-metrics-2 {
   grid-template-columns: 1.6fr 1fr;
 }
+.mkt-opp-metrics-3 {
+  grid-template-columns: 1.8fr 1fr 1fr;
+}
+@media (max-width: 900px) {
+  .mkt-opp-metrics-3 { grid-template-columns: 1fr 1fr; }
+  .mkt-opp-metrics-3 .mkt-metric-primary { grid-column: 1 / -1; }
+}
 .mkt-metric {
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.12);
@@ -2915,6 +2922,10 @@ p.lead { font-size: var(--fs-md); color: var(--text-dark); }
 }
 .mkt-metric-secondary {
   background: rgba(255,255,255,0.05);
+}
+.mkt-metric-tertiary {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.09);
 }
 .mkt-m-sup {
   font-size: var(--fs-xs);
@@ -4006,6 +4017,35 @@ p.lead { font-size: var(--fs-md); color: var(--text-dark); }
 }
 .panel-error strong { color: var(--red-900); font-weight: 700; }
 .panel-error a { color: var(--red-700); font-weight: 600; }
+
+/* ── Tendência de Expansão banner ── */
+.tendencia-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: linear-gradient(135deg, rgba(217,119,87,0.15) 0%, rgba(217,119,87,0.06) 100%);
+  border: 1px solid rgba(217,119,87,0.35);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+.tendencia-badge {
+  background: rgba(217,119,87,0.25);
+  color: var(--copper-100);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+.tendencia-desc {
+  font-size: var(--fs-sm);
+  color: var(--text-light);
+  line-height: 1.4;
+}
 
 .panel-stats {
   display: grid;

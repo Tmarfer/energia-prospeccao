@@ -151,11 +151,15 @@ function ModuleRaliePanel() {
     setLoading(true);
     setLoadingProgress(null);
     setError(null);
+
+    const isTendencia = filters.situacao === "__TENDENCIA__";
+
     try {
       const apiFilters = {};
       if (filters.uf) apiFilters.SigUFPrincipal = filters.uf;
       if (filters.tipo) apiFilters.SigTipoGeracao = filters.tipo;
-      if (filters.situacao) apiFilters.DscSituacaoObra = filters.situacao;
+      // Modo Tendência: não passa filtro de situação para a API (busca tudo, filtra depois do dedup)
+      if (filters.situacao && !isTendencia) apiFilters.DscSituacaoObra = filters.situacao;
       if (filters.viabilidade) apiFilters.DscViabilidade = filters.viabilidade;
       const hasFilters = Object.keys(apiFilters).length > 0;
       const fArg = hasFilters ? apiFilters : null;
@@ -163,7 +167,10 @@ function ModuleRaliePanel() {
 
       let records = [], rawTotal = 0;
 
-      if (limit === 0) {
+      // Modo Tendência ou Todos sempre força busca paginada completa
+      const effectiveLimit = (isTendencia || limit === 0) ? 0 : limit;
+
+      if (effectiveLimit === 0) {
         // Paginação completa em batches paralelos
         const result = await ckanQueryAll({
           q: qArg, filters: fArg,
@@ -172,7 +179,7 @@ function ModuleRaliePanel() {
         records = result.records;
         rawTotal = result.total;
       } else {
-        const res = await ckanQuery({ q: qArg, limit, filters: fArg });
+        const res = await ckanQuery({ q: qArg, limit: effectiveLimit, filters: fArg });
         if (!res || !res.success) throw new Error("Resposta inválida da API");
         records = (res.result && res.result.records) || [];
         rawTotal = res.result.total || records.length;
@@ -187,7 +194,15 @@ function ModuleRaliePanel() {
           byCeg.set(key, r);
         }
       }
-      const unique = Array.from(byCeg.values())
+
+      let unique = Array.from(byCeg.values());
+
+      // Modo Tendência: após dedup, remove projetos concluídos
+      if (isTendencia) {
+        unique = unique.filter(r => (r.DscSituacaoObra || "").toLowerCase() !== "concluída");
+      }
+
+      unique = unique
         .map(r => ({ ...r, __score: scoreLead(r) }))
         .sort((a, b) => b.__score - a.__score);
       setRows(unique);
@@ -259,6 +274,7 @@ function ModuleRaliePanel() {
           <label>Situação da obra</label>
           <select value={filters.situacao} onChange={e => setF("situacao", e.target.value)}>
             <option value="">Todas</option>
+            <option value="__TENDENCIA__">⭐ Tendência de Expansão (ativas)</option>
             {SITUACOES_OBRA.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
@@ -297,6 +313,16 @@ function ModuleRaliePanel() {
           <div style={{ marginTop: 6, fontSize: 12, opacity: .8 }}>
             Verifique a conexão ou acesse diretamente em <a href="https://dadosabertos.aneel.gov.br" target="_blank" rel="noreferrer">dadosabertos.aneel.gov.br</a>.
           </div>
+        </div>
+      )}
+
+      {filters.situacao === "__TENDENCIA__" && !loading && rows.length > 0 && (
+        <div className="tendencia-banner">
+          <span className="tendencia-badge">⭐ Tendência de Expansão · RALIE/ANEEL</span>
+          <span className="tendencia-desc">
+            {rows.length.toLocaleString("pt-BR")} projetos ativos (não concluídos) · {stats.totalMW.toFixed(0)} MW ·
+            universo de atuação 2026–2032 e sem previsão
+          </span>
         </div>
       )}
 
