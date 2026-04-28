@@ -1,6 +1,37 @@
 /* global React, UI */
-const { useState } = React;
+const { useState, useEffect } = React;
 const { Icon } = window.UI;
+
+// ── Market stats via ANEEL CKAN ──
+const RALIE_RES_ID = "4a615df8-4c25-48fa-bbea-873a36a79518";
+const CKAN_URL = "https://dadosabertos.aneel.gov.br/api/3/action/datastore_search";
+
+function ckanFetch(params) {
+  return new Promise((resolve, reject) => {
+    const cb = "__mkt_cb_" + Math.random().toString(36).slice(2);
+    const qs = new URLSearchParams({ ...params, callback: cb }).toString();
+    const s = document.createElement("script");
+    const t = setTimeout(() => { delete window[cb]; s.remove(); reject(new Error("timeout")); }, 25000);
+    window[cb] = d => { clearTimeout(t); delete window[cb]; s.remove(); resolve(d); };
+    s.onerror = () => { clearTimeout(t); delete window[cb]; s.remove(); reject(new Error("network")); };
+    s.src = CKAN_URL + "?" + qs;
+    document.head.appendChild(s);
+  });
+}
+
+function scoreRow(r) {
+  let s = 0;
+  const obra = (r.DscSituacaoObra || "").toLowerCase();
+  const viab = (r.DscViabilidade || "").toLowerCase();
+  const cron = (r.DscSituacaoCronograma || "").toLowerCase();
+  if (obra.includes("paralis")) s += 40;
+  else if (obra.includes("andament")) s += 15;
+  else if (obra.includes("não iniciad") || obra.includes("nao iniciad")) s += 20;
+  if (viab.includes("baix")) s += 30;
+  else if (viab.includes("méd") || viab.includes("med")) s += 18;
+  if (cron.includes("atras")) s += 15;
+  return Math.min(100, s);
+}
 
 /* ── Ciclo de vida ── */
 const CYCLE_PHASES = [
@@ -91,6 +122,47 @@ function ModuleHome({ goTo }) {
   const [openPhase, setOpenPhase] = useState(null);
   const [openPillar, setOpenPillar] = useState(null);
   const [openRalie, setOpenRalie] = useState(null);
+  const [mktStats, setMktStats] = useState(null);
+  const [mktLoading, setMktLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const countRes = await ckanFetch({ resource_id: RALIE_RES_ID, limit: 1 });
+        const total = countRes?.result?.total || 0;
+
+        const sampleLimit = Math.min(total, 1000);
+        const sampleRes = await ckanFetch({ resource_id: RALIE_RES_ID, limit: sampleLimit });
+        const records = sampleRes?.result?.records || [];
+
+        let hot = 0, warm = 0, totalMW = 0;
+        const seen = new Set();
+        for (const r of records) {
+          const key = r.CodCEG || r.IdeNucleoCEG || r._id;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          const score = scoreRow(r);
+          if (score >= 60) hot++;
+          else if (score >= 35) warm++;
+          const kw = parseFloat(String(r.MdaPotenciaOutorgadaKw || "").replace(",", "."));
+          if (isFinite(kw)) totalMW += kw / 1000;
+        }
+
+        const sampleSize = seen.size;
+        const factor = sampleSize > 0 ? total / sampleSize : 1;
+        setMktStats({
+          total,
+          hotLeads: Math.round(hot * factor),
+          warmLeads: Math.round(warm * factor),
+          totalMW: Math.round(totalMW * factor),
+        });
+      } catch {
+        setMktStats(null);
+      } finally {
+        setMktLoading(false);
+      }
+    })();
+  }, []);
 
   const activePhase = CYCLE_PHASES.find(p => p.id === openPhase);
 
@@ -110,6 +182,47 @@ function ModuleHome({ goTo }) {
           <strong>Edson Araújo Advogados</strong>
           <span className="sep">em parceria com</span>
           <strong>Thiago Fernandes Advogado</strong>
+        </div>
+      </div>
+
+      {/* ── Dimensão do mercado ── */}
+      <div className="mkt-opportunity-block">
+        <div className="mkt-opp-header">
+          <span className="mkt-opp-kicker">Universo de atuação · ANEEL / RALIE ao vivo</span>
+          <h3 className="mkt-opp-title">O mercado de implantação de usinas no Brasil</h3>
+          <p className="mkt-opp-lead">
+            Todos os empreendimentos ativos de geração elétrica em fase de implantação — monitorados pela ANEEL e atualizados mensalmente. Cada projeto é uma outorga com obrigações regulatórias ativas.
+          </p>
+        </div>
+        <div className="mkt-opp-metrics">
+          {mktLoading ? (
+            <div className="mkt-opp-loading">Consultando base ANEEL…</div>
+          ) : mktStats ? (
+            <>
+              <div className="mkt-metric mkt-metric-total">
+                <div className="mkt-m-value">{mktStats.total.toLocaleString("pt-BR")}</div>
+                <div className="mkt-m-label">projetos em implantação</div>
+                <div className="mkt-m-sub">universo total · base RALIE/ANEEL</div>
+              </div>
+              <div className="mkt-metric mkt-metric-hot">
+                <div className="mkt-m-value">{(mktStats.hotLeads + mktStats.warmLeads).toLocaleString("pt-BR")}</div>
+                <div className="mkt-m-label">leads quentes + mornos</div>
+                <div className="mkt-m-sub">risco regulatório ativo ou iminente</div>
+              </div>
+              <div className="mkt-metric mkt-metric-mw">
+                <div className="mkt-m-value">{mktStats.totalMW.toLocaleString("pt-BR")} MW</div>
+                <div className="mkt-m-label">potência em implantação</div>
+                <div className="mkt-m-sub">capacidade outorgada em construção</div>
+              </div>
+            </>
+          ) : (
+            <div className="mkt-opp-loading mkt-opp-offline">Dados offline — abra o Painel de Leads para consultar ao vivo</div>
+          )}
+        </div>
+        <div className="mkt-opp-cta-line">
+          <span className="mkt-opp-arrow">→</span>
+          <span>Cada lead quente ou morno representa um empreendedor com risco regulatório ativo e demanda latente por assessoria especializada.</span>
+          <button className="mkt-opp-link" onClick={() => goTo(6)}>Ver Painel de Leads →</button>
         </div>
       </div>
 

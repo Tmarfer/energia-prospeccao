@@ -19,7 +19,7 @@ window.GLOSSARY = {
 };
 
 window.MODULES = [
-  { id: 0, short: "Home",       label: "Abertura",            kicker: "Módulo 0" },
+  { id: 0, short: "Inicial",    label: "Inicial",             kicker: "Módulo 0" },
   { id: 1, short: "Mercado",    label: "O Mercado",           kicker: "Módulo 1" },
   { id: 2, short: "Penalidades",label: "Penalidades",         kicker: "Módulo 2" },
   { id: 3, short: "Excludente", label: "Excludente de Responsabilidade", kicker: "Módulo 3" },
