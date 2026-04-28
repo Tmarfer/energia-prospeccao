@@ -2835,8 +2835,8 @@ p.lead { font-size: var(--fs-md); color: var(--text-dark); }
 .mkt-opportunity-block {
   background: linear-gradient(135deg, var(--petrol-900) 0%, var(--petrol-800) 60%, var(--petrol-700) 100%);
   border-radius: var(--radius-xl);
-  padding: var(--space-8) var(--space-8);
-  margin: 0 0 var(--space-10);
+  padding: var(--space-6) var(--space-7);
+  margin: 0 0 var(--space-8);
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -2853,7 +2853,7 @@ p.lead { font-size: var(--fs-md); color: var(--text-dark); }
 }
 .mkt-opp-header {
   position: relative;
-  margin-bottom: var(--space-7);
+  margin-bottom: var(--space-4);
 }
 .mkt-opp-kicker {
   display: inline-flex;
@@ -2874,10 +2874,10 @@ p.lead { font-size: var(--fs-md); color: var(--text-dark); }
 }
 .mkt-opp-title {
   font-family: var(--font-display);
-  font-size: var(--fs-3xl);
+  font-size: var(--fs-2xl);
   font-weight: 700;
   color: #fff;
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-2);
   line-height: var(--lh-tight);
 }
 .mkt-opp-lead {
@@ -2892,8 +2892,8 @@ p.lead { font-size: var(--fs-md); color: var(--text-dark); }
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-5);
-  margin-bottom: var(--space-5);
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 .mkt-opp-metrics-2 {
   grid-template-columns: 1.6fr 1fr;
@@ -2909,7 +2909,7 @@ p.lead { font-size: var(--fs-md); color: var(--text-dark); }
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: var(--radius-lg);
-  padding: var(--space-6) var(--space-7);
+  padding: var(--space-4) var(--space-5);
   backdrop-filter: blur(4px);
   transition: background var(--dur-base) var(--ease-out);
 }
@@ -2928,37 +2928,37 @@ p.lead { font-size: var(--fs-md); color: var(--text-dark); }
   border-color: rgba(255,255,255,0.09);
 }
 .mkt-m-sup {
-  font-size: var(--fs-xs);
+  font-size: var(--fs-sm);
   font-weight: 600;
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
-  color: rgba(255,255,255,0.45);
-  margin-bottom: var(--space-2);
+  color: rgba(255,255,255,0.50);
+  margin-bottom: var(--space-1);
 }
 .mkt-m-value {
   font-family: var(--font-display);
-  font-size: var(--fs-6xl);
+  font-size: var(--fs-4xl);
   font-weight: 750;
   font-variant-numeric: tabular-nums;
   letter-spacing: var(--tracking-tight);
   color: #fff;
   line-height: 1;
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-1);
   display: flex;
   align-items: baseline;
   gap: 4px;
   flex-wrap: wrap;
 }
 .mkt-metric-primary .mkt-m-value { color: var(--copper-200); }
-.mkt-m-value-sm { font-size: var(--fs-5xl); }
+.mkt-m-value-sm { font-size: var(--fs-3xl); }
 .mkt-m-unit {
-  font-size: var(--fs-xl);
+  font-size: var(--fs-lg);
   font-weight: 500;
   opacity: 0.75;
   letter-spacing: 0;
 }
 .mkt-m-label {
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: rgba(255,255,255,0.70);
 }

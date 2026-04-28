@@ -197,9 +197,13 @@ function ModuleRaliePanel() {
 
       let unique = Array.from(byCeg.values());
 
-      // Modo Tendência: após dedup, remove projetos concluídos
+      // Modo Tendência: após dedup, mantém apenas situações ativas (Não Iniciada / Em Andamento)
+      // que é a definição do painel RALIE "Tendência de Expansão" da ANEEL
       if (isTendencia) {
-        unique = unique.filter(r => (r.DscSituacaoObra || "").toLowerCase() !== "concluída");
+        unique = unique.filter(r => {
+          const s = (r.DscSituacaoObra || "").trim();
+          return s === "Não Iniciada" || s === "Em Andamento";
+        });
       }
 
       unique = unique
