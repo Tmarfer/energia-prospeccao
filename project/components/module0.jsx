@@ -6,12 +6,16 @@ const { Icon } = window.UI;
 const RALIE_RES_ID = "4a615df8-4c25-48fa-bbea-873a36a79518";
 const CKAN_URL = "https://dadosabertos.aneel.gov.br/api/3/action/datastore_search";
 
-function ckanFetch(params) {
+// CAPEX médio ponderado para renováveis no Brasil (R$ milhões/MW instalado, ref. 2025)
+// Solar utility-scale: ~R$ 4,5M/MW · Eólica: ~R$ 7,0M/MW · PCH: ~R$ 6,0M/MW → média ~R$ 5,5M/MW
+const CAPEX_POR_MW = 5.5; // R$ milhões
+
+function ckanFetch(params, timeoutMs = 60000) {
   return new Promise((resolve, reject) => {
     const cb = "__mkt_cb_" + Math.random().toString(36).slice(2);
     const qs = new URLSearchParams({ ...params, callback: cb }).toString();
     const s = document.createElement("script");
-    const t = setTimeout(() => { delete window[cb]; s.remove(); reject(new Error("timeout")); }, 25000);
+    const t = setTimeout(() => { delete window[cb]; s.remove(); reject(new Error("timeout")); }, timeoutMs);
     window[cb] = d => { clearTimeout(t); delete window[cb]; s.remove(); resolve(d); };
     s.onerror = () => { clearTimeout(t); delete window[cb]; s.remove(); reject(new Error("network")); };
     s.src = CKAN_URL + "?" + qs;
@@ -19,18 +23,12 @@ function ckanFetch(params) {
   });
 }
 
-function scoreRow(r) {
-  let s = 0;
-  const obra = (r.DscSituacaoObra || "").toLowerCase();
-  const viab = (r.DscViabilidade || "").toLowerCase();
-  const cron = (r.DscSituacaoCronograma || "").toLowerCase();
-  if (obra.includes("paralis")) s += 40;
-  else if (obra.includes("andament")) s += 15;
-  else if (obra.includes("não iniciad") || obra.includes("nao iniciad")) s += 20;
-  if (viab.includes("baix")) s += 30;
-  else if (viab.includes("méd") || viab.includes("med")) s += 18;
-  if (cron.includes("atras")) s += 15;
-  return Math.min(100, s);
+function fmtBilhoes(reaisMilhoes) {
+  // converte R$ milhões → R$ bilhões formatado
+  const bilhoes = reaisMilhoes / 1000;
+  return bilhoes >= 100
+    ? bilhoes.toLocaleString("pt-BR", { maximumFractionDigits: 0 })
+    : bilhoes.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
 
 /* ── Ciclo de vida ── */
@@ -128,34 +126,57 @@ function ModuleHome({ goTo }) {
   useEffect(() => {
     (async () => {
       try {
+        // Passo 1: total de registros brutos
         const countRes = await ckanFetch({ resource_id: RALIE_RES_ID, limit: 1 });
-        const total = countRes?.result?.total || 0;
+        const totalBruto = countRes?.result?.total || 0;
 
-        const sampleLimit = Math.min(total, 1000);
-        const sampleRes = await ckanFetch({ resource_id: RALIE_RES_ID, limit: sampleLimit });
-        const records = sampleRes?.result?.records || [];
+        // Passo 2: buscar até 500 registros por batch, 2 batchs em paralelo = 1000 amostras
+        const BATCH = 500;
+        const N_BATCHES = 2;
+        const batchPromises = Array.from({ length: N_BATCHES }, (_, i) =>
+          ckanFetch({ resource_id: RALIE_RES_ID, limit: BATCH, offset: i * BATCH })
+        );
+        const batchResults = await Promise.all(batchPromises);
 
-        let hot = 0, warm = 0, totalMW = 0;
-        const seen = new Set();
-        for (const r of records) {
-          const key = r.CodCEG || r.IdeNucleoCEG || r._id;
-          if (seen.has(key)) continue;
-          seen.add(key);
-          const score = scoreRow(r);
-          if (score >= 60) hot++;
-          else if (score >= 35) warm++;
-          const kw = parseFloat(String(r.MdaPotenciaOutorgadaKw || "").replace(",", "."));
-          if (isFinite(kw)) totalMW += kw / 1000;
+        // Dedup por CEG e soma MW
+        const seen = new Map();
+        for (const res of batchResults) {
+          for (const r of (res?.result?.records || [])) {
+            const key = r.CodCEG || r.IdeNucleoCEG || r._id;
+            const prev = seen.get(key);
+            if (!prev || String(r.DatRalie || "") > String(prev.DatRalie || "")) {
+              seen.set(key, r);
+            }
+          }
         }
 
-        const sampleSize = seen.size;
-        const factor = sampleSize > 0 ? total / sampleSize : 1;
-        setMktStats({
-          total,
-          hotLeads: Math.round(hot * factor),
-          warmLeads: Math.round(warm * factor),
-          totalMW: Math.round(totalMW * factor),
-        });
+        let totalMW = 0;
+        let latestRalie = "";
+        for (const r of seen.values()) {
+          const kw = parseFloat(String(r.MdaPotenciaOutorgadaKw || "").replace(",", "."));
+          if (isFinite(kw)) totalMW += kw / 1000;
+          if (r.DatRalie && String(r.DatRalie) > latestRalie) latestRalie = String(r.DatRalie);
+        }
+
+        // Extrapola MW ao universo completo proporcionalmente (amostra = seen.size, universo = totalBruto)
+        const sampleSize = seen.size || 1;
+        const factor = totalBruto / sampleSize;
+        const totalMWExt = Math.round(totalMW * factor);
+        const capexEstimado = totalMWExt * CAPEX_POR_MW; // R$ milhões
+
+        // Formata data RALIE (yyyy-mm-dd ou similar)
+        let dataConsulta = "—";
+        if (latestRalie) {
+          const s = latestRalie.slice(0, 10);
+          if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+            const [y, m, d] = s.split("-");
+            dataConsulta = `${d}/${m}/${y}`;
+          } else {
+            dataConsulta = latestRalie.slice(0, 10);
+          }
+        }
+
+        setMktStats({ totalMW: totalMWExt, capexBilhoes: capexEstimado / 1000, dataConsulta });
       } catch {
         setMktStats(null);
       } finally {
@@ -188,40 +209,50 @@ function ModuleHome({ goTo }) {
       {/* ── Dimensão do mercado ── */}
       <div className="mkt-opportunity-block">
         <div className="mkt-opp-header">
-          <span className="mkt-opp-kicker">Universo de atuação · ANEEL / RALIE ao vivo</span>
-          <h3 className="mkt-opp-title">O mercado de implantação de usinas no Brasil</h3>
+          <span className="mkt-opp-kicker">Dimensão do mercado · ANEEL / RALIE ao vivo</span>
+          <h3 className="mkt-opp-title">O tamanho da oportunidade em geração de energia</h3>
           <p className="mkt-opp-lead">
-            Todos os empreendimentos ativos de geração elétrica em fase de implantação — monitorados pela ANEEL e atualizados mensalmente. Cada projeto é uma outorga com obrigações regulatórias ativas.
+            Capacidade geradora em fase de implantação no Brasil — cada megawatt outorgado representa um empreendimento com obrigações regulatórias ativas perante a ANEEL.
           </p>
         </div>
-        <div className="mkt-opp-metrics">
-          {mktLoading ? (
-            <div className="mkt-opp-loading">Consultando base ANEEL…</div>
-          ) : mktStats ? (
-            <>
-              <div className="mkt-metric mkt-metric-total">
-                <div className="mkt-m-value">{mktStats.total.toLocaleString("pt-BR")}</div>
-                <div className="mkt-m-label">projetos em implantação</div>
-                <div className="mkt-m-sub">universo total · base RALIE/ANEEL</div>
+
+        {mktLoading ? (
+          <div className="mkt-opp-loading">Consultando base ANEEL…</div>
+        ) : mktStats ? (
+          <>
+            <div className="mkt-opp-metrics mkt-opp-metrics-2">
+              <div className="mkt-metric mkt-metric-primary">
+                <div className="mkt-m-sup">estimativa de investimento em implantação</div>
+                <div className="mkt-m-value">
+                  R$ {fmtBilhoes(mktStats.capexBilhoes * 1000)}
+                  <span className="mkt-m-unit"> bilhões</span>
+                </div>
+                <div className="mkt-m-label">em projetos ativos de geração elétrica</div>
               </div>
-              <div className="mkt-metric mkt-metric-hot">
-                <div className="mkt-m-value">{(mktStats.hotLeads + mktStats.warmLeads).toLocaleString("pt-BR")}</div>
-                <div className="mkt-m-label">leads quentes + mornos</div>
-                <div className="mkt-m-sub">risco regulatório ativo ou iminente</div>
+              <div className="mkt-metric mkt-metric-secondary">
+                <div className="mkt-m-sup">potência outorgada em construção</div>
+                <div className="mkt-m-value mkt-m-value-sm">
+                  {mktStats.totalMW.toLocaleString("pt-BR")}
+                  <span className="mkt-m-unit"> MW</span>
+                </div>
+                <div className="mkt-m-label">capacidade instalada em implantação</div>
               </div>
-              <div className="mkt-metric mkt-metric-mw">
-                <div className="mkt-m-value">{mktStats.totalMW.toLocaleString("pt-BR")} MW</div>
-                <div className="mkt-m-label">potência em implantação</div>
-                <div className="mkt-m-sub">capacidade outorgada em construção</div>
-              </div>
-            </>
-          ) : (
-            <div className="mkt-opp-loading mkt-opp-offline">Dados offline — abra o Painel de Leads para consultar ao vivo</div>
-          )}
-        </div>
+            </div>
+            <div className="mkt-opp-footnote">
+              * Estimativa baseada em CAPEX médio ponderado de R$ 5,5 milhões/MW (solar ~R$ 4,5M · eólica ~R$ 7,0M · PCH ~R$ 6,0M, ref. 2025).
+              Dados apurados em consulta ao sistema RALIE da ANEEL em {mktStats.dataConsulta} —{" "}
+              <a href="https://dadosabertos.aneel.gov.br/dataset/ralie-relatorio-de-acompanhamento-da-expansao-da-oferta-de-geracao-de-energia-eletrica" target="_blank" rel="noreferrer">dadosabertos.aneel.gov.br</a>.
+            </div>
+          </>
+        ) : (
+          <div className="mkt-opp-loading mkt-opp-offline">
+            Dados offline — abra o <button className="mkt-opp-link" onClick={() => goTo(6)}>Painel de Leads</button> para consultar ao vivo.
+          </div>
+        )}
+
         <div className="mkt-opp-cta-line">
           <span className="mkt-opp-arrow">→</span>
-          <span>Cada lead quente ou morno representa um empreendedor com risco regulatório ativo e demanda latente por assessoria especializada.</span>
+          <span>Todo projeto neste universo tem obrigações regulatórias ativas com a ANEEL — e a maioria não conta com assessoria especializada.</span>
           <button className="mkt-opp-link" onClick={() => goTo(6)}>Ver Painel de Leads →</button>
         </div>
       </div>

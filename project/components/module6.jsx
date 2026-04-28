@@ -6,7 +6,7 @@ const RALIE_RESOURCE_ID = "4a615df8-4c25-48fa-bbea-873a36a79518";
 const CKAN_BASE = "https://dadosabertos.aneel.gov.br/api/3/action/datastore_search";
 
 // JSONP helper (CORS-safe fallback for ANEEL CKAN)
-function jsonp(url, params) {
+function jsonp(url, params, timeoutMs = 60000) {
   return new Promise((resolve, reject) => {
     const cbName = "__ckan_cb_" + Math.random().toString(36).slice(2);
     const qs = new URLSearchParams({ ...params, callback: cbName }).toString();
@@ -17,8 +17,8 @@ function jsonp(url, params) {
     };
     const timer = setTimeout(() => {
       cleanup();
-      reject(new Error("Timeout ao consultar a API da ANEEL (30s)"));
-    }, 30000);
+      reject(new Error("Timeout ao consultar a API da ANEEL (60s). Tente reduzir o limite ou adicionar filtros."));
+    }, timeoutMs);
     window[cbName] = (data) => {
       clearTimeout(timer);
       cleanup();
@@ -39,6 +39,32 @@ async function ckanQuery({ q = "", limit = 100, offset = 0, filters = null }) {
   if (q) params.q = q;
   if (filters) params.filters = JSON.stringify(filters);
   return jsonp(CKAN_BASE, params);
+}
+
+// Busca paginada: retorna todos os registros em lotes de BATCH_SIZE
+const BATCH_SIZE = 500;
+async function ckanQueryAll({ q = "", filters = null, onProgress = null }) {
+  // 1. get total
+  const countRes = await ckanQuery({ q, limit: 1, filters });
+  if (!countRes || !countRes.success) throw new Error("Resposta inválida da API");
+  const total = countRes.result.total || 0;
+  if (total === 0) return { total: 0, records: [] };
+
+  // 2. parallel batches (max 6 simultaneous)
+  const numBatches = Math.ceil(total / BATCH_SIZE);
+  const allRecords = [];
+  const PARALLEL = 4;
+  for (let i = 0; i < numBatches; i += PARALLEL) {
+    const slice = Array.from({ length: Math.min(PARALLEL, numBatches - i) }, (_, k) => i + k);
+    const results = await Promise.all(
+      slice.map(b => ckanQuery({ q, limit: BATCH_SIZE, offset: b * BATCH_SIZE, filters }))
+    );
+    for (const r of results) {
+      if (r && r.success) allRecords.push(...(r.result.records || []));
+    }
+    if (onProgress) onProgress(Math.min(allRecords.length, total), total);
+  }
+  return { total, records: allRecords };
 }
 
 const UFS = ["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"];
@@ -114,14 +140,16 @@ function ModuleRaliePanel() {
   });
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(null);
   const [error, setError] = useState(null);
-  const [total, setTotal] = useState(0);
+  const [totalRaw, setTotalRaw] = useState(0);
   const [limit, setLimit] = useState(100);
   const [selected, setSelected] = useState(null);
   const [lastFetched, setLastFetched] = useState(null);
 
   const runSearch = async () => {
     setLoading(true);
+    setLoadingProgress(null);
     setError(null);
     try {
       const apiFilters = {};
@@ -130,23 +158,27 @@ function ModuleRaliePanel() {
       if (filters.situacao) apiFilters.DscSituacaoObra = filters.situacao;
       if (filters.viabilidade) apiFilters.DscViabilidade = filters.viabilidade;
       const hasFilters = Object.keys(apiFilters).length > 0;
+      const fArg = hasFilters ? apiFilters : null;
+      const qArg = filters.q || "";
 
-      // "Todos": primeiro busca o total, depois traz tudo de uma vez
-      let actualLimit = limit;
+      let records = [], rawTotal = 0;
+
       if (limit === 0) {
-        const countRes = await ckanQuery({ q: filters.q || "", limit: 1, filters: hasFilters ? apiFilters : null });
-        if (!countRes || !countRes.success) throw new Error("Resposta inválida da API");
-        actualLimit = countRes.result.total || 1000;
+        // Paginação completa em batches paralelos
+        const result = await ckanQueryAll({
+          q: qArg, filters: fArg,
+          onProgress: (done, tot) => setLoadingProgress({ done, tot })
+        });
+        records = result.records;
+        rawTotal = result.total;
+      } else {
+        const res = await ckanQuery({ q: qArg, limit, filters: fArg });
+        if (!res || !res.success) throw new Error("Resposta inválida da API");
+        records = (res.result && res.result.records) || [];
+        rawTotal = res.result.total || records.length;
       }
 
-      const res = await ckanQuery({
-        q: filters.q || "",
-        limit: actualLimit,
-        filters: hasFilters ? apiFilters : null
-      });
-      if (!res || !res.success) throw new Error("Resposta inválida da API");
-      const records = (res.result && res.result.records) || [];
-      // Dedup por CEG (último RALIE)
+      // Dedup por CEG (último RALIE por data)
       const byCeg = new Map();
       for (const r of records) {
         const key = r.CodCEG || r.IdeNucleoCEG || r._id;
@@ -159,13 +191,14 @@ function ModuleRaliePanel() {
         .map(r => ({ ...r, __score: scoreLead(r) }))
         .sort((a, b) => b.__score - a.__score);
       setRows(unique);
-      setTotal(res.result.total || records.length);
+      setTotalRaw(rawTotal);
       setLastFetched(new Date());
     } catch (e) {
       setError(e.message || String(e));
       setRows([]);
     } finally {
       setLoading(false);
+      setLoadingProgress(null);
     }
   };
 
@@ -268,13 +301,13 @@ function ModuleRaliePanel() {
       )}
 
       <div className="panel-stats">
-        <div className="stat"><div className="v">{rows.length}</div><div className="l">Resultados</div></div>
+        <div className="stat"><div className="v">{rows.length}</div><div className="l">Projetos únicos</div></div>
         <div className="stat hot"><div className="v">{stats.hot}</div><div className="l">Leads quentes</div></div>
         <div className="stat warm"><div className="v">{stats.warm}</div><div className="l">Leads mornos</div></div>
         <div className="stat"><div className="v">{stats.totalMW.toFixed(0)} MW</div><div className="l">Potência agregada</div></div>
         <div className="stat meta">
           <div className="v">{lastFetched ? lastFetched.toLocaleTimeString("pt-BR") : "—"}</div>
-          <div className="l">Última consulta · {total.toLocaleString("pt-BR")} registros no RALIE</div>
+          <div className="l">Última consulta · {totalRaw.toLocaleString("pt-BR")} reg. brutos no RALIE</div>
         </div>
       </div>
 
@@ -289,7 +322,14 @@ function ModuleRaliePanel() {
             <div className="c-viab">Viabilidade</div>
           </div>
           <div className="list-body">
-            {loading && <div className="list-empty">Consultando a API da ANEEL…</div>}
+            {loading && (
+              <div className="panel-fetching">
+                {loadingProgress
+                  ? `Carregando registros… ${loadingProgress.done.toLocaleString("pt-BR")} / ${loadingProgress.tot.toLocaleString("pt-BR")}`
+                  : "Consultando a API da ANEEL…"
+                }
+              </div>
+            )}
             {!loading && !rows.length && !error && <div className="list-empty">Nenhum resultado. Ajuste os filtros e consulte novamente.</div>}
             {!loading && rows.map((r, i) => {
               const tier = leadTier(r.__score);
