@@ -572,9 +572,9 @@
     .risk-desc { font-size: 12px; color: rgba(255,150,150,0.50); margin-top: 8px; line-height: 1.4; }
 
     /* ─────────────────────────────────────────────────────
-       S9 — 3 PILARES
+       S10 — 3 PILARES
     ───────────────────────────────────────────────────── */
-    #s9 {
+    #s10 {
       background: linear-gradient(160deg, var(--ink-900) 0%, var(--ink-950) 100%);
     }
     .pillars-grid {
@@ -635,9 +635,9 @@
     }
 
     /* ─────────────────────────────────────────────────────
-       S10 — RALIE
+       S11 — RALIE
     ───────────────────────────────────────────────────── */
-    #s10 {
+    #s11 {
       background: var(--ink-950);
     }
     .ralie-layout {
@@ -731,9 +731,9 @@
     .rp-badge.warm { background: rgba(180,120,20,0.18); color: rgba(255,200,80,0.90); }
 
     /* ─────────────────────────────────────────────────────
-       S11 — LEI 15.269/2025
+       S12 — LEI 15.269/2025
     ───────────────────────────────────────────────────── */
-    #s11 {
+    #s12 {
       background: linear-gradient(170deg, var(--ink-900) 0%, var(--ink-950) 100%);
     }
     .lei-grid {
@@ -781,9 +781,9 @@
     .lei-hl-text strong { color: var(--copper-200); font-weight: 700; }
 
     /* ─────────────────────────────────────────────────────
-       S12 — CTA
+       S13 — CTA
     ───────────────────────────────────────────────────── */
-    #s12 {
+    #s13 {
       background: radial-gradient(ellipse 100% 80% at 50% 40%, rgba(189,84,40,0.20) 0%, transparent 60%),
                   var(--ink-950);
       text-align: center;
@@ -946,9 +946,9 @@
     .pc-text  { font-size: 14px; color: rgba(255,255,255,0.50); line-height: 1.6; }
 
     /* ─────────────────────────────────────────────────────
-       S7 — EXCLUDENTE DE RESPONSABILIDADE
+       S8 — EXCLUDENTE DE RESPONSABILIDADE
     ───────────────────────────────────────────────────── */
-    #s7 { background: linear-gradient(160deg, #0f1629 0%, var(--ink-950) 60%); }
+    #s8 { background: linear-gradient(160deg, #0f1629 0%, var(--ink-950) 60%); }
     .excl-layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1003,9 +1003,9 @@
     .es-text { font-size: 13px; color: rgba(255,255,255,0.60); line-height: 1.5; }
 
     /* ─────────────────────────────────────────────────────
-       S8 — RESPONSABILIDADE DO TITULAR
+       S9 — RESPONSABILIDADE DO TITULAR
     ───────────────────────────────────────────────────── */
-    #s8 { background: linear-gradient(180deg, var(--ink-950) 0%, var(--ink-900) 100%); }
+    #s9 { background: linear-gradient(180deg, var(--ink-950) 0%, var(--ink-900) 100%); }
     .resp-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1031,6 +1031,131 @@
       display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;
     }
     .rc-list li::before { content: '·'; color: var(--copper-400); font-weight: 900; flex-shrink: 0; font-size: 16px; line-height: 1.2; }
+    /* ─────────────────────────────────────────────────────
+       S7 — CALCULADORA DE EXPOSIÇÃO
+    ───────────────────────────────────────────────────── */
+    #s7 { background: radial-gradient(ellipse 90% 60% at 50% 50%, rgba(155,28,28,0.10) 0%, transparent 65%), var(--ink-950); }
+
+    .calc-types {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 32px 0 28px;
+    }
+    @media (max-width: 700px) { .calc-types { grid-template-columns: 1fr; } }
+
+    .calc-type-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 16px;
+      padding: 22px 20px 16px;
+      display: flex; flex-direction: column; gap: 6px;
+      transition: border-color 0.3s;
+    }
+    .calc-type-card:hover { border-color: rgba(217,119,87,0.30); }
+    .ctc-badge {
+      display: inline-block;
+      background: rgba(217,119,87,0.18); color: var(--copper-300);
+      border: 1px solid rgba(217,119,87,0.30);
+      font-size: 11px; font-weight: 800;
+      letter-spacing: 0.10em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 6px;
+      align-self: flex-start; margin-bottom: 4px;
+    }
+    .ctc-badge-pch {
+      background: rgba(100,180,255,0.12); color: rgba(160,210,255,0.85);
+      border-color: rgba(100,180,255,0.20);
+    }
+    .ctc-full { font-size: 13px; color: rgba(255,255,255,0.55); }
+    .ctc-range { font-size: 18px; font-weight: 700; color: #fff; margin: 2px 0; }
+    .ctc-range strong { color: var(--copper-300); }
+    .ctc-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 8px 0; }
+    .ctc-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12.5px;
+    }
+    .ctc-label { color: rgba(255,255,255,0.45); }
+    .ctc-val { color: rgba(255,255,255,0.80); font-weight: 600; }
+    .ctc-val-red { color: rgba(255,160,160,0.90); }
+    .ctc-risk { margin-top: 2px; }
+    .ctc-note { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 6px; }
+
+    /* Calculator box */
+    .calc-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 20px;
+      padding: 28px 28px 20px;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .cb-title {
+      font-size: 13px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.35); margin-bottom: 20px;
+    }
+    .cb-controls { margin-bottom: 24px; }
+    .cb-type-toggle {
+      display: flex; gap: 8px; margin-bottom: 20px;
+    }
+    .cbt {
+      padding: 8px 24px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: transparent; color: rgba(255,255,255,0.45);
+      font-family: var(--sans); font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .cbt.active {
+      background: rgba(217,119,87,0.18);
+      border-color: rgba(217,119,87,0.40);
+      color: var(--copper-200);
+    }
+    .cbt:hover:not(.active) { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.70); }
+    .cb-inputs { display: flex; flex-direction: column; gap: 16px; }
+    .cb-field { display: flex; flex-direction: column; gap: 6px; }
+    .cb-label { font-size: 12px; color: rgba(255,255,255,0.40); }
+    .cb-slider {
+      -webkit-appearance: none;
+      width: 100%; height: 4px; border-radius: 2px;
+      background: rgba(255,255,255,0.12); outline: none; cursor: pointer;
+    }
+    .cb-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--copper-400);
+      cursor: pointer; transition: background 0.2s;
+    }
+    .cb-slider::-webkit-slider-thumb:hover { background: var(--copper-300); }
+    .cb-slider-val { font-size: 13px; color: rgba(255,255,255,0.60); text-align: right; }
+    .cb-results {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-bottom: 16px;
+    }
+    @media (max-width: 600px) { .cb-results { grid-template-columns: 1fr; } }
+    .cb-result-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 12px 14px;
+    }
+    .cbr-risk { border-color: rgba(200,30,30,0.18); background: rgba(200,30,30,0.04); }
+    .cbr-label { font-size: 11.5px; color: rgba(255,255,255,0.40); margin-bottom: 6px; }
+    .cbr-val { font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.85); }
+    .cbr-risk .cbr-val { color: rgba(255,160,160,0.90); }
+    .cb-result-total {
+      grid-column: 1 / -1;
+      background: rgba(217,119,87,0.10);
+      border: 1px solid rgba(217,119,87,0.25);
+      border-radius: 10px; padding: 14px 16px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .cbr-total {
+      font-family: var(--serif);
+      font-size: clamp(22px, 2.5vw, 28px);
+      color: var(--copper-200);
+    }
+    .cb-disclaimer {
+      font-size: 10.5px; color: rgba(255,255,255,0.22); line-height: 1.5;
+    }
   </style>
 </head>
 <body>
@@ -1046,12 +1171,13 @@
     <div class="nav-dot" data-target="s4" title="A Outorga"></div>
     <div class="nav-dot" data-target="s5" title="Ciclo de Vida"></div>
     <div class="nav-dot" data-target="s6" title="Penalidades"></div>
-    <div class="nav-dot" data-target="s7" title="Excludente"></div>
-    <div class="nav-dot" data-target="s8" title="Responsabilidade"></div>
-    <div class="nav-dot" data-target="s9" title="3 Pilares"></div>
-    <div class="nav-dot" data-target="s10" title="Inteligência RALIE"></div>
-    <div class="nav-dot" data-target="s11" title="Lei 15.269/2025"></div>
-    <div class="nav-dot" data-target="s12" title="Fale com a gente"></div>
+    <div class="nav-dot" data-target="s7" title="Calculadora de Exposição"></div>
+    <div class="nav-dot" data-target="s8" title="Excludente"></div>
+    <div class="nav-dot" data-target="s9" title="Responsabilidade"></div>
+    <div class="nav-dot" data-target="s10" title="3 Pilares"></div>
+    <div class="nav-dot" data-target="s11" title="Inteligência RALIE"></div>
+    <div class="nav-dot" data-target="s12" title="Lei 15.269/2025"></div>
+    <div class="nav-dot" data-target="s13" title="Fale com a gente"></div>
   </nav>
 
   <!-- Phase Detail Drawer -->
@@ -1412,9 +1538,100 @@
   </section>
 
   <!-- ─────────────────────────────────────────────────────
-       S7 — EXCLUDENTE DE RESPONSABILIDADE
+       S7 — CALCULADORA DE EXPOSIÇÃO
   ───────────────────────────────────────────────────── -->
   <section id="s7">
+    <div class="section-inner">
+      <p class="kicker reveal">CGH e PCH — o tamanho real do risco</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        Pequeno em MW,<br>
+        <span class="em-copper">grande em exposição.</span>
+      </h2>
+      <p class="body-md reveal reveal-delay-2" style="margin-top:16px;max-width:700px;">
+        Uma CGH de 1 MW pode ter R$ 4 milhões investidos — e até R$ 400 mil em multas. Uma PCH de 30 MW pode ter R$ 180 milhões em capex — e R$ 18 milhões em penalidades acumuladas. Calcule a exposição do seu empreendimento.
+      </p>
+
+      <!-- CGH / PCH dimension cards -->
+      <div class="calc-types reveal reveal-delay-2">
+        <div class="calc-type-card" id="card-cgh">
+          <div class="ctc-badge">CGH</div>
+          <div class="ctc-full">Central Geradora Hidrelétrica</div>
+          <div class="ctc-range">Até <strong>1 MW</strong> instalado</div>
+          <div class="ctc-divider"></div>
+          <div class="ctc-row"><span class="ctc-label">Capex típico</span><span class="ctc-val">R$ 3–6 M/MW</span></div>
+          <div class="ctc-row"><span class="ctc-label">Para 1 MW</span><span class="ctc-val">~R$ 4,5 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">Multa máx. (10%)</span><span class="ctc-val ctc-val-red">R$ 450 mil</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">Garantia editalícia (2%)</span><span class="ctc-val ctc-val-red">R$ 90 mil</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">PLD/mês (atraso)</span><span class="ctc-val ctc-val-red">~R$ 63 mil</span></div>
+          <div class="ctc-note">Capac. factor hídrico 55% · PLD ref. R$ 160/MWh</div>
+        </div>
+        <div class="calc-type-card" id="card-pch">
+          <div class="ctc-badge ctc-badge-pch">PCH</div>
+          <div class="ctc-full">Pequena Central Hidrelétrica</div>
+          <div class="ctc-range"><strong>1 a 30 MW</strong> instalados</div>
+          <div class="ctc-divider"></div>
+          <div class="ctc-row"><span class="ctc-label">Capex típico</span><span class="ctc-val">R$ 4–8 M/MW</span></div>
+          <div class="ctc-row"><span class="ctc-label">Para 30 MW</span><span class="ctc-val">~R$ 180 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">Multa máx. (10%)</span><span class="ctc-val ctc-val-red">R$ 18 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">Garantia editalícia (2%)</span><span class="ctc-val ctc-val-red">R$ 3,6 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">PLD/mês (atraso)</span><span class="ctc-val ctc-val-red">~R$ 1,9 mi</span></div>
+          <div class="ctc-note">Capac. factor hídrico 55% · PLD ref. R$ 160/MWh</div>
+        </div>
+      </div>
+
+      <!-- Interactive calculator -->
+      <div class="calc-box reveal reveal-delay-3">
+        <div class="cb-title">Calculadora de Exposição</div>
+        <div class="cb-controls">
+          <div class="cb-type-toggle">
+            <button class="cbt active" data-type="cgh" id="btn-cgh">CGH</button>
+            <button class="cbt" data-type="pch" id="btn-pch">PCH</button>
+          </div>
+          <div class="cb-inputs">
+            <div class="cb-field">
+              <label class="cb-label" id="lbl-mw">Potência instalada (MW) — até 1 MW</label>
+              <input type="range" id="inp-mw" min="0.1" max="1" step="0.1" value="0.5" class="cb-slider">
+              <div class="cb-slider-val"><span id="val-mw">0,5</span> MW</div>
+            </div>
+            <div class="cb-field">
+              <label class="cb-label">Meses de atraso no cronograma</label>
+              <input type="range" id="inp-months" min="1" max="24" step="1" value="6" class="cb-slider">
+              <div class="cb-slider-val"><span id="val-months">6</span> meses</div>
+            </div>
+          </div>
+        </div>
+        <div class="cb-results">
+          <div class="cb-result-item">
+            <div class="cbr-label">💰 Capex estimado</div>
+            <div class="cbr-val" id="res-capex">R$ 2,3 mi</div>
+          </div>
+          <div class="cb-result-item cbr-risk">
+            <div class="cbr-label">⚖ Multa administrativa máx.</div>
+            <div class="cbr-val" id="res-multa">R$ 225 mil</div>
+          </div>
+          <div class="cb-result-item cbr-risk">
+            <div class="cbr-label">🔐 Execução de garantia</div>
+            <div class="cbr-val" id="res-garantia">R$ 45 mil</div>
+          </div>
+          <div class="cb-result-item cbr-risk">
+            <div class="cbr-label">⚡ Exposição PLD acumulada</div>
+            <div class="cbr-val" id="res-pld">R$ 378 mil</div>
+          </div>
+          <div class="cb-result-total">
+            <div class="cbr-label">Exposição total estimada</div>
+            <div class="cbr-total" id="res-total">R$ 648 mil</div>
+          </div>
+        </div>
+        <div class="cb-disclaimer">Estimativa ilustrativa. Capex CGH: R$ 4,5 M/MW · PCH: R$ 6 M/MW · PLD ref.: R$ 160/MWh · Fator de capacidade hídrico: 55% · Garantia: 2% do capex. Valores reais dependem de laudo técnico.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S8 — EXCLUDENTE DE RESPONSABILIDADE
+  ───────────────────────────────────────────────────── -->
+  <section id="s8">
     <div class="section-inner">
       <p class="kicker reveal">O serviço de maior valor agregado</p>
       <h2 class="display-md reveal reveal-delay-1">
@@ -1473,9 +1690,9 @@
   </section>
 
   <!-- ─────────────────────────────────────────────────────
-       S8 — RESPONSABILIDADE DO TITULAR
+       S9 — RESPONSABILIDADE DO TITULAR
   ───────────────────────────────────────────────────── -->
-  <section id="s8">
+  <section id="s9">
     <div class="section-inner">
       <p class="kicker reveal">Obrigações do outorgado</p>
       <h2 class="display-md reveal reveal-delay-1">
@@ -1533,9 +1750,9 @@
   </section>
 
   <!-- ─────────────────────────────────────────────────────
-       S9 — 3 PILARES
+       S10 — 3 PILARES
   ───────────────────────────────────────────────────── -->
-  <section id="s9">
+  <section id="s10">
     <div class="section-inner">
       <p class="kicker reveal">Como atuamos</p>
       <h2 class="display-md reveal reveal-delay-1">
@@ -1583,9 +1800,9 @@
   </section>
 
   <!-- ─────────────────────────────────────────────────────
-       S10 — RALIE
+       S11 — RALIE
   ───────────────────────────────────────────────────── -->
-  <section id="s10">
+  <section id="s11">
     <div class="section-inner">
       <p class="kicker reveal">Inteligência comercial</p>
       <h2 class="display-md reveal reveal-delay-1">
@@ -1667,9 +1884,9 @@
   </section>
 
   <!-- ─────────────────────────────────────────────────────
-       S11 — LEI 15.269/2025
+       S12 — LEI 15.269/2025
   ───────────────────────────────────────────────────── -->
-  <section id="s11">
+  <section id="s12">
     <div class="section-inner">
       <p class="kicker reveal">Marco regulatório 2025</p>
       <h2 class="display-md reveal reveal-delay-1">
@@ -1718,9 +1935,9 @@
   </section>
 
   <!-- ─────────────────────────────────────────────────────
-       S12 — CTA
+       S13 — CTA
   ───────────────────────────────────────────────────── -->
-  <section id="s12">
+  <section id="s13">
     <div class="section-inner" style="text-align:center;">
       <p class="kicker reveal" style="justify-content:center;">Fale com a gente</p>
       <h2 class="display-lg reveal reveal-delay-1">
@@ -1939,6 +2156,65 @@
     document.querySelectorAll('.cphase[data-phase]').forEach(card => {
       card.addEventListener('click', () => openPhaseDrawer(card.dataset.phase));
     });
+    // ── Calculadora de Exposição ─────────────────────────
+    (function() {
+      const CAPEX = { cgh: 4.5, pch: 6.0 }; // R$ M/MW
+      const PLD_REF = 160; // R$/MWh
+      const CF = 0.55;     // capacity factor hidro
+      const HORAS_MES = 720;
+      const MULTA_PERC = 0.10;
+      const GARANTIA_PERC = 0.02;
+
+      let tipo = 'cgh';
+      const inpMw     = document.getElementById('inp-mw');
+      const inpMonths = document.getElementById('inp-months');
+      const valMw     = document.getElementById('val-mw');
+      const valMonths = document.getElementById('val-months');
+      const lblMw     = document.getElementById('lbl-mw');
+
+      function fmt(val) {
+        if (val >= 1000000) return 'R$ ' + (val/1000000).toFixed(1).replace('.',',') + ' mi';
+        if (val >= 1000)    return 'R$ ' + Math.round(val/1000) + ' mil';
+        return 'R$ ' + Math.round(val);
+      }
+
+      function calc() {
+        const mw = parseFloat(inpMw.value);
+        const meses = parseInt(inpMonths.value);
+        valMw.textContent = mw.toFixed(1).replace('.',',');
+        valMonths.textContent = meses;
+
+        const capex = mw * CAPEX[tipo] * 1e6;
+        const multa = capex * MULTA_PERC;
+        const garantia = capex * GARANTIA_PERC;
+        const mwhMes = mw * HORAS_MES * CF;
+        const pldTotal = mwhMes * PLD_REF * meses;
+        const total = multa + garantia + pldTotal;
+
+        document.getElementById('res-capex').textContent   = fmt(capex);
+        document.getElementById('res-multa').textContent   = fmt(multa);
+        document.getElementById('res-garantia').textContent = fmt(garantia);
+        document.getElementById('res-pld').textContent     = fmt(pldTotal);
+        document.getElementById('res-total').textContent   = fmt(total);
+      }
+
+      function setType(t) {
+        tipo = t;
+        const maxMw = t === 'cgh' ? 1 : 30;
+        inpMw.max = maxMw;
+        inpMw.value = Math.min(parseFloat(inpMw.value), maxMw);
+        lblMw.textContent = 'Potência instalada (MW) — ' + (t === 'cgh' ? 'até 1 MW' : '1 a 30 MW');
+        document.getElementById('btn-cgh').classList.toggle('active', t === 'cgh');
+        document.getElementById('btn-pch').classList.toggle('active', t === 'pch');
+        calc();
+      }
+
+      document.getElementById('btn-cgh').addEventListener('click', () => setType('cgh'));
+      document.getElementById('btn-pch').addEventListener('click', () => setType('pch'));
+      inpMw.addEventListener('input', calc);
+      inpMonths.addEventListener('input', calc);
+      calc(); // initial render
+    })();
   </script>
 
 </body>
