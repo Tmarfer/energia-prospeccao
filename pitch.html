@@ -572,9 +572,9 @@
     .risk-desc { font-size: 12px; color: rgba(255,150,150,0.50); margin-top: 8px; line-height: 1.4; }
 
     /* ─────────────────────────────────────────────────────
-       S7 — 3 PILARES
+       S9 — 3 PILARES
     ───────────────────────────────────────────────────── */
-    #s7 {
+    #s9 {
       background: linear-gradient(160deg, var(--ink-900) 0%, var(--ink-950) 100%);
     }
     .pillars-grid {
@@ -635,9 +635,9 @@
     }
 
     /* ─────────────────────────────────────────────────────
-       S8 — RALIE
+       S10 — RALIE
     ───────────────────────────────────────────────────── */
-    #s8 {
+    #s10 {
       background: var(--ink-950);
     }
     .ralie-layout {
@@ -731,9 +731,9 @@
     .rp-badge.warm { background: rgba(180,120,20,0.18); color: rgba(255,200,80,0.90); }
 
     /* ─────────────────────────────────────────────────────
-       S9 — LEI 15.269/2025
+       S11 — LEI 15.269/2025
     ───────────────────────────────────────────────────── */
-    #s9 {
+    #s11 {
       background: linear-gradient(170deg, var(--ink-900) 0%, var(--ink-950) 100%);
     }
     .lei-grid {
@@ -781,9 +781,9 @@
     .lei-hl-text strong { color: var(--copper-200); font-weight: 700; }
 
     /* ─────────────────────────────────────────────────────
-       S10 — CTA
+       S12 — CTA
     ───────────────────────────────────────────────────── */
-    #s10 {
+    #s12 {
       background: radial-gradient(ellipse 100% 80% at 50% 40%, rgba(189,84,40,0.20) 0%, transparent 60%),
                   var(--ink-950);
       text-align: center;
@@ -834,7 +834,203 @@
       .cycle-flow { flex-wrap: wrap; gap: 8px; }
       .carrow { flex: 0 0 100%; text-align: center; }
       #nav-dots { display: none; }
+      .excl-layout { grid-template-columns: 1fr; }
+      .resp-grid { grid-template-columns: 1fr; }
     }
+
+    /* ─────────────────────────────────────────────────────
+       PHASE DRAWER (Apple-style bottom sheet)
+    ───────────────────────────────────────────────────── */
+    .drawer-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0);
+      z-index: 799;
+      pointer-events: none;
+      transition: background 0.4s var(--ease-in-out);
+    }
+    .drawer-backdrop.open {
+      background: rgba(0,0,0,0.58);
+      pointer-events: auto;
+    }
+    .phase-drawer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--ink-900);
+      border-top: 1px solid rgba(255,255,255,0.10);
+      border-radius: 24px 24px 0 0;
+      padding: 12px 48px 48px;
+      z-index: 800;
+      transform: translateY(100%);
+      transition: transform 0.55s var(--ease-out);
+      max-height: 72vh;
+      overflow-y: auto;
+    }
+    .phase-drawer.open {
+      transform: translateY(0);
+    }
+    .pd-handle {
+      width: 40px; height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.18);
+      margin: 0 auto 24px;
+    }
+    .pd-close {
+      position: absolute; top: 20px; right: 28px;
+      background: rgba(255,255,255,0.08);
+      border: none; color: rgba(255,255,255,0.55);
+      font-size: 16px; width: 32px; height: 32px;
+      border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+    .pd-close:hover { background: rgba(255,255,255,0.16); color: #fff; }
+    .pd-kicker {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--copper-400); margin-bottom: 8px;
+    }
+    .pd-title {
+      font-family: var(--serif); font-size: clamp(22px, 3vw, 30px);
+      color: #fff; margin-bottom: 24px; line-height: 1.2;
+    }
+    .pd-body {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 700px) { .pd-body { grid-template-columns: 1fr; } }
+    .pd-col-title {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.35); margin-bottom: 12px;
+    }
+    .pd-list {
+      list-style: none; display: flex; flex-direction: column; gap: 8px;
+    }
+    .pd-list li {
+      font-size: 14px; color: rgba(255,255,255,0.72);
+      line-height: 1.5; display: flex; gap: 8px; align-items: flex-start;
+    }
+    .pd-list li::before {
+      content: '—'; color: var(--copper-400); font-weight: 700; flex-shrink: 0;
+    }
+    .pd-list.risks li::before { content: '▲'; color: #f87171; font-size: 11px; margin-top: 3px; }
+    .pd-desc {
+      font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.7;
+      margin-bottom: 20px; grid-column: 1 / -1;
+    }
+    /* Click indicator on cphase cards */
+    .cphase { position: relative; }
+    .cphase::after {
+      content: '↗';
+      position: absolute; bottom: 8px; right: 10px;
+      font-size: 11px; opacity: 0.35;
+      transition: opacity 0.2s;
+    }
+    .cphase:hover::after { opacity: 0.8; }
+
+    /* ─────────────────────────────────────────────────────
+       PENALTY CALLOUT
+    ───────────────────────────────────────────────────── */
+    .penalty-callout {
+      display: flex; align-items: flex-start; gap: 16px;
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.22);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin: 0 auto;
+      max-width: 680px;
+      text-align: left;
+    }
+    .pc-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .pc-title { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.88); margin-bottom: 6px; }
+    .pc-text  { font-size: 14px; color: rgba(255,255,255,0.50); line-height: 1.6; }
+
+    /* ─────────────────────────────────────────────────────
+       S7 — EXCLUDENTE DE RESPONSABILIDADE
+    ───────────────────────────────────────────────────── */
+    #s7 { background: linear-gradient(160deg, #0f1629 0%, var(--ink-950) 60%); }
+    .excl-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 40px;
+      align-items: start;
+    }
+    .excl-col-title {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.32); margin-bottom: 16px;
+    }
+    .excl-cause-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .excl-cause {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 16px;
+    }
+    .ec-icon { font-size: 22px; margin-bottom: 8px; }
+    .ec-title { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.80); margin-bottom: 5px; }
+    .ec-text  { font-size: 12px; color: rgba(255,255,255,0.42); line-height: 1.5; }
+    .excl-list {
+      list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px;
+    }
+    .excl-list li {
+      font-size: 14px; color: rgba(255,255,255,0.65);
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .excl-list li::before { content: '✓'; color: #34d399; font-weight: 700; flex-shrink: 0; }
+    .excl-flow-title {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.32); margin-bottom: 12px;
+    }
+    .excl-steps { display: flex; flex-direction: column; gap: 8px; }
+    .excl-step {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 10px 14px;
+    }
+    .es-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(217,119,87,0.20); color: var(--copper-300);
+      font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .es-text { font-size: 13px; color: rgba(255,255,255,0.60); line-height: 1.5; }
+
+    /* ─────────────────────────────────────────────────────
+       S8 — RESPONSABILIDADE DO TITULAR
+    ───────────────────────────────────────────────────── */
+    #s8 { background: linear-gradient(180deg, var(--ink-950) 0%, var(--ink-900) 100%); }
+    .resp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 36px;
+    }
+    .resp-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 24px;
+    }
+    .resp-card-highlight {
+      border-color: rgba(217,119,87,0.30);
+      background: rgba(217,119,87,0.05);
+    }
+    .rc-icon { font-size: 24px; margin-bottom: 10px; }
+    .rc-title { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.85); margin-bottom: 14px; }
+    .rc-list {
+      list-style: none; display: flex; flex-direction: column; gap: 8px;
+    }
+    .rc-list li {
+      font-size: 13px; color: rgba(255,255,255,0.55);
+      display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;
+    }
+    .rc-list li::before { content: '·'; color: var(--copper-400); font-weight: 900; flex-shrink: 0; font-size: 16px; line-height: 1.2; }
   </style>
 </head>
 <body>
@@ -849,12 +1045,24 @@
     <div class="nav-dot" data-target="s3" title="Sistema Elétrico"></div>
     <div class="nav-dot" data-target="s4" title="A Outorga"></div>
     <div class="nav-dot" data-target="s5" title="Ciclo de Vida"></div>
-    <div class="nav-dot" data-target="s6" title="O Risco"></div>
-    <div class="nav-dot" data-target="s7" title="3 Pilares"></div>
-    <div class="nav-dot" data-target="s8" title="Inteligência RALIE"></div>
-    <div class="nav-dot" data-target="s9" title="Lei 15.269/2025"></div>
-    <div class="nav-dot" data-target="s10" title="Fale com a gente"></div>
+    <div class="nav-dot" data-target="s6" title="Penalidades"></div>
+    <div class="nav-dot" data-target="s7" title="Excludente"></div>
+    <div class="nav-dot" data-target="s8" title="Responsabilidade"></div>
+    <div class="nav-dot" data-target="s9" title="3 Pilares"></div>
+    <div class="nav-dot" data-target="s10" title="Inteligência RALIE"></div>
+    <div class="nav-dot" data-target="s11" title="Lei 15.269/2025"></div>
+    <div class="nav-dot" data-target="s12" title="Fale com a gente"></div>
   </nav>
+
+  <!-- Phase Detail Drawer -->
+  <div id="phase-backdrop" class="drawer-backdrop"></div>
+  <div id="phase-drawer" class="phase-drawer" role="dialog" aria-modal="true">
+    <div class="pd-handle"></div>
+    <button class="pd-close" id="pd-close" aria-label="Fechar">✕</button>
+    <div class="pd-kicker" id="pd-kicker"></div>
+    <h3 class="pd-title" id="pd-title"></h3>
+    <div class="pd-body" id="pd-body"></div>
+  </div>
 
   <!-- ─────────────────────────────────────────────────────
        S1 — HERO
@@ -1121,27 +1329,27 @@
       </p>
 
       <div class="cycle-flow reveal reveal-delay-2">
-        <div class="cphase cp-neutral">
+        <div class="cphase cp-neutral" data-phase="leilao">
           <div class="cp-label">Leilão / Outorga</div>
           <div class="cp-sub">Ponto de partida</div>
         </div>
         <div class="carrow">→</div>
-        <div class="cphase cp-active">
+        <div class="cphase cp-active" data-phase="preobra">
           <div class="cp-label">Pré-obra</div>
           <div class="cp-sub">Licenças · Projetos</div>
         </div>
         <div class="carrow">→</div>
-        <div class="cphase cp-active">
+        <div class="cphase cp-active" data-phase="obras">
           <div class="cp-label">Obras / Implantação</div>
           <div class="cp-sub">Maior volume de obrigações</div>
         </div>
         <div class="carrow">→</div>
-        <div class="cphase cp-amber">
+        <div class="cphase cp-amber" data-phase="operacao">
           <div class="cp-label">Operação</div>
           <div class="cp-sub">Teste → Comercial</div>
         </div>
         <div class="carrow">→</div>
-        <div class="cphase cp-neutral">
+        <div class="cphase cp-neutral" data-phase="operacao_plena">
           <div class="cp-label">Operação Plena</div>
           <div class="cp-sub">Portaria ANEEL</div>
         </div>
@@ -1159,13 +1367,13 @@
   </section>
 
   <!-- ─────────────────────────────────────────────────────
-       S6 — O RISCO
+       S6 — PENALIDADES
   ───────────────────────────────────────────────────── -->
   <section id="s6">
     <div class="section-inner" style="text-align:center;">
-      <p class="kicker reveal" style="justify-content:center;">A dor do cliente</p>
+      <p class="kicker reveal" style="justify-content:center;">As consequências</p>
       <h2 class="display-lg reveal reveal-delay-1">
-        Sem assessoria especializada,<br>o custo pode ser alto.
+        Descumprimento de obrigação<br><span class="em-copper">tem custo real e imediato.</span>
       </h2>
 
       <div class="risk-grid reveal reveal-delay-2">
@@ -1189,16 +1397,145 @@
         </div>
       </div>
 
-      <p class="body-md reveal reveal-delay-3" style="margin:0 auto;text-align:center;">
+      <div class="penalty-callout reveal reveal-delay-3">
+        <span class="pc-icon">⚠</span>
+        <div>
+          <div class="pc-title">A penalidade pode ocorrer mesmo sem culpa subjetiva</div>
+          <div class="pc-text">O descumprimento de obrigação regulatória é objetivo — basta o atraso ou a omissão para que a infração esteja configurada, independentemente de boa-fé ou desconhecimento da norma.</div>
+        </div>
+      </div>
+
+      <p class="body-md reveal reveal-delay-3" style="margin:24px auto 0;text-align:center;">
         A maioria dos empreendedores descobre o risco tarde — quando a ANEEL já autuou ou o atraso formal já gerou efeitos contratuais. Nossa atuação é preventiva.
       </p>
     </div>
   </section>
 
   <!-- ─────────────────────────────────────────────────────
-       S7 — 3 PILARES
+       S7 — EXCLUDENTE DE RESPONSABILIDADE
   ───────────────────────────────────────────────────── -->
   <section id="s7">
+    <div class="section-inner">
+      <p class="kicker reveal">O serviço de maior valor agregado</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        O instituto que pode<br>
+        <span class="em-copper">suspender toda a penalidade.</span>
+      </h2>
+      <p class="body-md reveal reveal-delay-2" style="margin-top:16px;max-width:700px;">
+        O excludente de responsabilidade é o mecanismo regulatório que, quando bem construído, suspende multas, embargos, execução de garantia e recomposição de lastro — desde que o atraso decorra de causa externa e irresistível.
+      </p>
+
+      <div class="excl-layout reveal reveal-delay-2">
+        <div class="excl-causes">
+          <div class="excl-col-title">Causas reconhecidas pela ANEEL</div>
+          <div class="excl-cause-grid">
+            <div class="excl-cause">
+              <div class="ec-icon">🌧</div>
+              <div class="ec-title">Causas climáticas extremas</div>
+              <div class="ec-text">Eventos meteorológicos atípicos comprovados por laudos do INMET — seca extrema, enchentes, chuvas muito acima da média com impacto direto e documentado na obra.</div>
+            </div>
+            <div class="excl-cause">
+              <div class="ec-icon">🏛</div>
+              <div class="ec-title">Atos do Poder Público</div>
+              <div class="ec-text">A causa mais frequente na prática. Demora do IBAMA ou órgãos estaduais/municipais em emitir licenças ambientais, embargos, decisões judiciais, desapropriações lentas.</div>
+            </div>
+            <div class="excl-cause">
+              <div class="ec-icon">🚨</div>
+              <div class="ec-title">Situações de emergência</div>
+              <div class="ec-text">Pandemias, epidemias regionais, desastres naturais, crises na cadeia de suprimentos — exigem comprovação documental robusta do nexo causal.</div>
+            </div>
+            <div class="excl-cause">
+              <div class="ec-icon">🌐</div>
+              <div class="ec-title">Outros motivos reconhecidos</div>
+              <div class="ec-text">Greve de transportadores, eventos geopolíticos com impacto comprovável no projeto específico. A ANEEL exige demonstração rigorosa do nexo causal.</div>
+            </div>
+          </div>
+        </div>
+        <div class="excl-effects">
+          <div class="excl-col-title">O que o excludente suspende</div>
+          <ul class="excl-list">
+            <li>Isenção de penalidade administrativa (multa, embargo)</li>
+            <li>Isenção de penalidade editalícia (multa contratual, execução de garantia)</li>
+            <li>Isenção de recomposição de lastro de energia</li>
+            <li>Postergação formal do cronograma e do prazo da outorga</li>
+          </ul>
+          <div class="excl-flow-title">Como construímos o requerimento</div>
+          <div class="excl-steps">
+            <div class="excl-step"><span class="es-num">1</span><span class="es-text">Identificação do evento e do nexo de causalidade</span></div>
+            <div class="excl-step"><span class="es-num">2</span><span class="es-text">Coleta de documentação comprobatória (laudos, ofícios, protocolos)</span></div>
+            <div class="excl-step"><span class="es-num">3</span><span class="es-text">Construção da peça técnica central com o nexo causal dia a dia</span></div>
+            <div class="excl-step"><span class="es-num">4</span><span class="es-text">Protocolo tempestivo na ANEEL — SFG + SCG</span></div>
+            <div class="excl-step"><span class="es-num">5</span><span class="es-text">Recurso à Diretoria se necessário</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S8 — RESPONSABILIDADE DO TITULAR
+  ───────────────────────────────────────────────────── -->
+  <section id="s8">
+    <div class="section-inner">
+      <p class="kicker reveal">Obrigações do outorgado</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        Ser titular de uma outorga<br>
+        <span class="em-copper">é uma responsabilidade permanente.</span>
+      </h2>
+      <p class="body-md reveal reveal-delay-2" style="margin-top:16px;max-width:700px;">
+        A outorga não é apenas um direito — é um conjunto de deveres que se estende por toda a vida do empreendimento. O titular responde perante a ANEEL, o meio ambiente e terceiros afetados pela obra e pela operação.
+      </p>
+
+      <div class="resp-grid reveal reveal-delay-2">
+        <div class="resp-card">
+          <div class="rc-icon">📋</div>
+          <div class="rc-title">Obrigações Declaratórias</div>
+          <ul class="rc-list">
+            <li>Declaração mensal de avanço de obras (RAPEEL) — prazo: dia 15</li>
+            <li>Relatórios mensais de geração para o ONS e ANEEL</li>
+            <li>Notificação de eventos de força maior em até 60 dias</li>
+            <li>Atualização cadastral no SIGA a cada alteração de projeto</li>
+            <li>Prestação de informações em processos administrativos da ANEEL</li>
+          </ul>
+        </div>
+        <div class="resp-card">
+          <div class="rc-icon">🌱</div>
+          <div class="rc-title">Obrigações Ambientais</div>
+          <ul class="rc-list">
+            <li>Manter Licença de Instalação (LI) válida durante toda a fase de obras</li>
+            <li>Obter Licença de Operação (LO) antes do início da operação comercial</li>
+            <li>Cumprir condicionantes ambientais estabelecidas no licenciamento</li>
+            <li>Responder por danos ambientais decorrentes da obra ou operação</li>
+          </ul>
+        </div>
+        <div class="resp-card">
+          <div class="rc-icon">🤝</div>
+          <div class="rc-title">Responsabilidade perante Terceiros</div>
+          <ul class="rc-list">
+            <li>Indenizar proprietários e comunidades afetadas pela implantação</li>
+            <li>Cumprir obrigações de compensação ambiental e social do EIA</li>
+            <li>Responder por danos à rede elétrica causados pelo empreendimento</li>
+            <li>Manutenção de seguros obrigatórios previstos no ato de outorga</li>
+          </ul>
+        </div>
+        <div class="resp-card resp-card-highlight">
+          <div class="rc-icon">⚠</div>
+          <div class="rc-title">Em caso de M&amp;A ou cessão</div>
+          <ul class="rc-list">
+            <li>A transferência de outorga exige aprovação prévia da ANEEL</li>
+            <li>O adquirente herda todas as pendências e passivos regulatórios</li>
+            <li>Due diligence regulatória é essencial antes de qualquer transação</li>
+            <li>Ausência de due diligence é o principal vetor de risco em M&amp;A de projetos</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S9 — 3 PILARES
+  ───────────────────────────────────────────────────── -->
+  <section id="s9">
     <div class="section-inner">
       <p class="kicker reveal">Como atuamos</p>
       <h2 class="display-md reveal reveal-delay-1">
@@ -1246,9 +1583,9 @@
   </section>
 
   <!-- ─────────────────────────────────────────────────────
-       S8 — RALIE
+       S10 — RALIE
   ───────────────────────────────────────────────────── -->
-  <section id="s8">
+  <section id="s10">
     <div class="section-inner">
       <p class="kicker reveal">Inteligência comercial</p>
       <h2 class="display-md reveal reveal-delay-1">
@@ -1330,9 +1667,9 @@
   </section>
 
   <!-- ─────────────────────────────────────────────────────
-       S9 — LEI 15.269/2025
+       S11 — LEI 15.269/2025
   ───────────────────────────────────────────────────── -->
-  <section id="s9">
+  <section id="s11">
     <div class="section-inner">
       <p class="kicker reveal">Marco regulatório 2025</p>
       <h2 class="display-md reveal reveal-delay-1">
@@ -1381,9 +1718,9 @@
   </section>
 
   <!-- ─────────────────────────────────────────────────────
-       S10 — CTA
+       S12 — CTA
   ───────────────────────────────────────────────────── -->
-  <section id="s10">
+  <section id="s12">
     <div class="section-inner" style="text-align:center;">
       <p class="kicker reveal" style="justify-content:center;">Fale com a gente</p>
       <h2 class="display-lg reveal reveal-delay-1">
@@ -1477,6 +1814,131 @@
       });
       currentIdx = idx;
     }, { passive: true });
+
+    // ── Phase Drawer ─────────────────────────────────────
+    const PHASE_DATA = {
+      leilao: {
+        kicker: 'Fase 1 de 5',
+        title: 'Leilão / Outorga',
+        desc: 'O ato jurídico que dá origem à relação regulatória. Ganhar o leilão é apenas o início — a outorga cria obrigações imediatas que se estendem por toda a vida do projeto.',
+        obrigacoes: [
+          'Assinar o contrato de concessão ou ato de autorização dentro do prazo',
+          'Apresentar garantias financeiras exigidas pelo edital',
+          'Registrar o empreendimento no SIGA/ANEEL',
+          'Iniciar obras dentro do prazo contratual estabelecido'
+        ],
+        riscos: [
+          'Caducidade por não assinatura do contrato no prazo',
+          'Perda de garantia por descumprimento de condição precedente',
+          'Infração por não início de obras no prazo contratual'
+        ]
+      },
+      preobra: {
+        kicker: 'Fase 2 de 5',
+        title: 'Pré-obra · Licenças e Projetos',
+        desc: 'Fase crítica e frequentemente subestimada. O prazo corre desde a outorga — e a demora ambiental ou de conexão não suspende automaticamente as obrigações contratuais.',
+        obrigacoes: [
+          'Obter Licença Prévia (LP) e Licença de Instalação (LI) junto ao órgão ambiental competente',
+          'Submeter projeto básico à ANEEL para aprovação técnica',
+          'Celebrar Contrato de Conexão com o ONS ou distribuidora local',
+          'Protocolar pedido de excludente de responsabilidade se houver atraso ambiental'
+        ],
+        riscos: [
+          'Atraso ambiental sem excludente protocolado = infração automática',
+          'Projeto licenciado divergente do projeto ANEEL pode gerar autuação',
+          'Prazo de início de obras contando sem obras iniciadas'
+        ]
+      },
+      obras: {
+        kicker: 'Fase 3 de 5 · ★ Foco da nossa atuação',
+        title: 'Obras / Implantação',
+        desc: 'A fase de maior volume de obrigações regulatórias. Cada mês sem declaração é uma infração automática. É aqui que a maioria das penalidades se origina — e onde nossa atuação preventiva tem maior valor.',
+        obrigacoes: [
+          'Declarar mensalmente o avanço físico das obras no RAPEEL até o dia 15',
+          'Manter cronograma atualizado e notificar a ANEEL de alterações relevantes',
+          'Notificar eventos de força maior em até 60 dias do início do evento',
+          'Manter a Licença de Instalação (LI) válida durante toda a fase de obras',
+          'Atualizar dados cadastrais no SIGA quando houver alteração de projeto'
+        ],
+        riscos: [
+          'Infração automática por omissão no RAPEEL (mesmo sem obras em andamento)',
+          'Penalidade administrativa de até 10% do valor do investimento por atraso',
+          'Cassação da outorga por paralisia prolongada sem justificativa aceita',
+          'Execução de garantia editalícia por descumprimento do cronograma'
+        ]
+      },
+      operacao: {
+        kicker: 'Fase 4 de 5 · ★ Foco da nossa atuação',
+        title: 'Operação · Teste → Comercial',
+        desc: 'Fase frequentemente negligenciada. A usina pode estar gerando energia enquanto o empreendimento está tecnicamente em infração por ausência de autorização formal para operação comercial.',
+        obrigacoes: [
+          'Solicitar autorização formal da ANEEL para início dos testes de operação',
+          'Submeter laudos de comissionamento e testes de capacidade',
+          'Obter Licença de Operação (LO) do órgão ambiental antes da operação comercial',
+          'Comunicar formalmente o início da operação comercial à ANEEL'
+        ],
+        riscos: [
+          'Operação comercial sem portaria da ANEEL = infração grave',
+          'Divergência entre potência autorizada e potência medida gera autuação',
+          'LO vencida durante operação configura descontinuidade de conformidade'
+        ]
+      },
+      operacao_plena: {
+        kicker: 'Fase 5 de 5',
+        title: 'Operação Plena',
+        desc: 'Com a portaria de autorização vigente, as obrigações não cessam — entram em modo de manutenção contínua. Conformidade operacional exige monitoramento permanente.',
+        obrigacoes: [
+          'Manter a portaria de autorização da ANEEL vigente e atualizada',
+          'Submeter relatórios mensais de geração ao ONS e à ANEEL',
+          'Manter seguros e garantias obrigatórios previstos no ato de outorga',
+          'Reportar manutenções programadas que reduzam capacidade instalada'
+        ],
+        riscos: [
+          'Perda de certificado de medição por não conformidade técnica',
+          'Divergência no MRE por geração não declarada corretamente',
+          'Descontinuidade de conformidade por vencimento de licenças de operação'
+        ]
+      }
+    };
+
+    function openPhaseDrawer(phaseKey) {
+      const d = PHASE_DATA[phaseKey];
+      if (!d) return;
+      document.getElementById('pd-kicker').textContent = d.kicker;
+      document.getElementById('pd-title').textContent = d.title;
+      document.getElementById('pd-body').innerHTML = `
+        <p class="pd-desc">${d.desc}</p>
+        <div>
+          <div class="pd-col-title">Obrigações principais</div>
+          <ul class="pd-list">
+            ${d.obrigacoes.map(o => `<li>${o}</li>`).join('')}
+          </ul>
+        </div>
+        <div>
+          <div class="pd-col-title">Riscos se descumpridas</div>
+          <ul class="pd-list risks">
+            ${d.riscos.map(r => `<li>${r}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+      document.getElementById('phase-drawer').classList.add('open');
+      document.getElementById('phase-backdrop').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePhaseDrawer() {
+      document.getElementById('phase-drawer').classList.remove('open');
+      document.getElementById('phase-backdrop').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('pd-close').addEventListener('click', closePhaseDrawer);
+    document.getElementById('phase-backdrop').addEventListener('click', closePhaseDrawer);
+    window.addEventListener('keydown', e => { if (e.key === 'Escape') closePhaseDrawer(); });
+
+    document.querySelectorAll('.cphase[data-phase]').forEach(card => {
+      card.addEventListener('click', () => openPhaseDrawer(card.dataset.phase));
+    });
   </script>
 
 </body>
