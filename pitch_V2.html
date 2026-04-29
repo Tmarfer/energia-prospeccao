@@ -1,0 +1,2621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edson Araújo &amp; Thiago Fernandes — Assessoria em Geração de Energia · V2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,300;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─────────────────────────────────────────────────────
+       DESIGN TOKENS
+    ───────────────────────────────────────────────────── */
+    :root {
+      --ink-950:   #0C0A09;
+      --ink-900:   #1C1917;
+      --ink-800:   #2C2724;
+      --ink-700:   #44403C;
+      --ink-600:   #57534E;
+      --ink-400:   #A8A29E;
+      --ink-200:   #E7E5E4;
+      --ink-50:    #FAFAF9;
+
+      --copper-700: #9D3A1F;
+      --copper-600: #BF5028;
+      --copper-500: #D97757;
+      --copper-400: #E49475;
+      --copper-300: #EEB49E;
+      --copper-200: #F6D5C8;
+      --copper-100: #FAE8E2;
+
+      --serif: 'Instrument Serif', Georgia, serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+    }
+
+    /* ─────────────────────────────────────────────────────
+       RESET & BASE
+    ───────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--ink-950);
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       STICKY PROGRESS BAR
+    ───────────────────────────────────────────────────── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--copper-500), var(--copper-300));
+      z-index: 1000;
+      transition: width 0.1s linear;
+      will-change: width;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       STICKY NAV DOTS
+    ───────────────────────────────────────────────────── */
+    #nav-dots {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 900;
+    }
+    .nav-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.22);
+      border: 1px solid rgba(255,255,255,0.12);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .nav-dot.active {
+      background: var(--copper-400);
+      transform: scale(1.4);
+    }
+    .nav-dot:hover { background: rgba(255,255,255,0.55); }
+
+    /* ─────────────────────────────────────────────────────
+       SECTION BASE
+    ───────────────────────────────────────────────────── */
+    section {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 80px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-inner {
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       REVEAL ANIMATION
+    ───────────────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.12s; }
+    .reveal-delay-2 { transition-delay: 0.24s; }
+    .reveal-delay-3 { transition-delay: 0.36s; }
+    .reveal-delay-4 { transition-delay: 0.48s; }
+    .reveal-delay-5 { transition-delay: 0.60s; }
+
+    /* ─────────────────────────────────────────────────────
+       TYPOGRAPHY SCALE
+    ───────────────────────────────────────────────────── */
+    .kicker {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--copper-300);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .kicker::before {
+      content: "";
+      display: inline-block;
+      width: 20px; height: 1.5px;
+      background: var(--copper-400);
+      border-radius: 2px;
+    }
+
+    .display-xl {
+      font-family: var(--serif);
+      font-size: clamp(52px, 8vw, 96px);
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      color: #fff;
+      font-weight: 400;
+    }
+    .display-lg {
+      font-family: var(--serif);
+      font-size: clamp(38px, 5.5vw, 72px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: #fff;
+      font-weight: 400;
+    }
+    .display-md {
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 52px);
+      line-height: 1.12;
+      letter-spacing: -0.015em;
+      color: #fff;
+      font-weight: 400;
+    }
+    .body-lg {
+      font-size: clamp(17px, 1.8vw, 21px);
+      line-height: 1.6;
+      color: rgba(255,255,255,0.62);
+      font-weight: 400;
+      max-width: 640px;
+    }
+    .body-md {
+      font-size: clamp(14px, 1.4vw, 17px);
+      line-height: 1.65;
+      color: rgba(255,255,255,0.55);
+      max-width: 560px;
+    }
+    .em-copper { color: var(--copper-300); }
+    .em-white  { color: #fff; }
+
+    /* ─────────────────────────────────────────────────────
+       S1 — HERO
+    ───────────────────────────────────────────────────── */
+    #s1 {
+      background: radial-gradient(ellipse 120% 80% at 70% -10%, rgba(189,84,40,0.18) 0%, transparent 55%),
+                  radial-gradient(ellipse 80% 60% at -10% 100%, rgba(189,84,40,0.10) 0%, transparent 55%),
+                  var(--ink-950);
+      justify-content: flex-end;
+      padding-bottom: 100px;
+    }
+    .hero-firms {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 28px;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.45);
+    }
+    .hero-firms strong { color: rgba(255,255,255,0.80); font-weight: 600; }
+    .hero-firms .sep {
+      font-size: 12px;
+      color: rgba(255,255,255,0.25);
+    }
+    .scroll-cue {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.28);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      animation: scrollCueFade 2s ease-in-out infinite;
+    }
+    .scroll-cue svg { width: 20px; opacity: 0.45; }
+    @keyframes scrollCueFade {
+      0%, 100% { opacity: 0.5; transform: translateX(-50%) translateY(0); }
+      50%       { opacity: 1;   transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ─────────────────────────────────────────────────────
+       S2 — MERCADO
+    ───────────────────────────────────────────────────── */
+    #s2 {
+      background: linear-gradient(160deg, var(--ink-900) 0%, var(--ink-950) 100%);
+    }
+    .market-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin: 44px 0 36px;
+    }
+    .mstat {
+      padding: 28px 24px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .mstat:hover { background: rgba(255,255,255,0.07); border-color: rgba(217,119,87,0.28); }
+    .mstat.primary {
+      border-color: rgba(217,119,87,0.30);
+      background: rgba(217,119,87,0.08);
+    }
+    .mstat-sup {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+      margin-bottom: 10px;
+    }
+    .mstat-val {
+      font-family: var(--serif);
+      font-size: clamp(32px, 4vw, 52px);
+      line-height: 1;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .mstat.primary .mstat-val { color: var(--copper-200); }
+    .mstat-unit { font-size: 0.45em; font-family: var(--sans); font-weight: 500; opacity: 0.7; }
+    .mstat-label { font-size: 13px; color: rgba(255,255,255,0.55); }
+    .mstat-note {
+      margin-top: 8px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.28);
+      line-height: 1.5;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: 8px;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       S3 — SISTEMA ELÉTRICO
+    ───────────────────────────────────────────────────── */
+    #s3 {
+      background: linear-gradient(170deg, var(--ink-900) 0%, var(--ink-950) 100%);
+    }
+    .energy-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 48px 0 32px;
+      position: relative;
+    }
+    .enode {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 16px 22px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.03);
+      text-align: center;
+      gap: 8px;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .enode:hover { background: rgba(255,255,255,0.06); }
+    .enode-icon { width: 68px; height: 68px; }
+    .enode-icon svg { width: 100%; height: 100%; }
+    .enode-name {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.90);
+    }
+    .enode-sub { font-size: 11px; color: rgba(255,255,255,0.38); line-height: 1.3; }
+    /* GERAÇÃO — highlighted */
+    .enode.gen {
+      border-color: rgba(217,119,87,0.45);
+      background: rgba(217,119,87,0.09);
+      animation: genGlow 3s ease-in-out infinite;
+    }
+    @keyframes genGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(217,119,87,0.0); }
+      50%       { box-shadow: 0 0 28px 6px rgba(217,119,87,0.22); }
+    }
+    .enode-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--copper-200);
+      background: rgba(217,119,87,0.22);
+      border: 1px solid rgba(217,119,87,0.40);
+      border-radius: 20px;
+      padding: 3px 10px;
+    }
+    /* Cables between nodes */
+    .ecable {
+      flex: 0 0 52px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      position: relative;
+    }
+    .ecable-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: rgba(255,255,255,0.22);
+      white-space: nowrap;
+    }
+    .ecable-track {
+      position: relative;
+      width: 100%;
+      height: 3px;
+      background: rgba(255,255,255,0.09);
+      border-radius: 2px;
+      overflow: visible;
+    }
+    .eparticle {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      opacity: 0;
+      animation: pflow 1.5s linear infinite;
+    }
+    .pc-copper { background: var(--copper-300); box-shadow: 0 0 6px 2px rgba(217,119,87,0.65); }
+    .pc-blue   { background: rgba(130,195,255,0.95); box-shadow: 0 0 5px 2px rgba(100,180,255,0.5); }
+    .pc-green  { background: rgba(130,220,160,0.95); box-shadow: 0 0 5px 2px rgba(100,200,130,0.5); }
+    @keyframes pflow {
+      0%   { left: -8px; opacity: 0; }
+      8%   { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { left: calc(100% + 8px); opacity: 0; }
+    }
+
+    /* ─────────────────────────────────────────────────────
+       S4 — A OUTORGA
+    ───────────────────────────────────────────────────── */
+    #s4 {
+      background: var(--ink-950);
+    }
+    .split-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .split-right {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .outorga-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 14px;
+      padding: 22px 24px;
+    }
+    .outorga-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--copper-300);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .outorga-card p { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+    .outorga-types {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .otype {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+    }
+    .otype-badge {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .otype-badge.auth { background: rgba(217,119,87,0.20); color: var(--copper-200); border: 1px solid rgba(217,119,87,0.35); }
+    .otype-badge.conc { background: rgba(100,130,220,0.15); color: rgba(160,185,255,0.90); border: 1px solid rgba(100,130,220,0.25); }
+    .otype-badge.perm { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.60); border: 1px solid rgba(255,255,255,0.12); }
+    .otype-text { font-size: 13.5px; color: rgba(255,255,255,0.60); line-height: 1.5; }
+    .otype-text strong { color: rgba(255,255,255,0.88); font-weight: 600; }
+
+    /* ─────────────────────────────────────────────────────
+       S5 — CICLO DE VIDA
+    ───────────────────────────────────────────────────── */
+    #s5 {
+      background: linear-gradient(180deg, var(--ink-950) 0%, var(--ink-900) 100%);
+    }
+    .cycle-flow {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin: 44px 0 20px;
+    }
+    .cphase {
+      flex: 1;
+      padding: 20px 14px;
+      border-radius: 14px;
+      border: 1px solid;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .cphase:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.35); }
+    .cphase.cp-neutral { background: linear-gradient(180deg,#fff 0%,#f5f4f3 100%); border-color: #ddd; }
+    .cphase.cp-neutral .cp-label { color: #44403C; }
+    .cphase.cp-active  { background: linear-gradient(180deg,#ECFDF5 0%,#fff 100%); border-color: rgba(217,119,87,0.35); }
+    .cphase.cp-active .cp-label { color: #065F46; }
+    .cphase.cp-amber   { background: linear-gradient(180deg,#FFFBEB 0%,#fff 100%); border-color: rgba(245,158,11,0.30); }
+    .cphase.cp-amber .cp-label { color: #92400E; }
+    .cp-label { font-size: 13px; font-weight: 700; line-height: 1.3; }
+    .cp-sub   { font-size: 11px; opacity: 0.65; line-height: 1.2; }
+    .carrow {
+      flex: 0 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.22);
+      font-size: 18px;
+    }
+    .cycle-bracket {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .cbracket-line {
+      width: 58%;
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, transparent, var(--copper-500) 15%, var(--copper-500) 85%, transparent);
+      opacity: 0.7;
+    }
+    .cbracket-text {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--copper-400);
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+    }
+    .cycle-note {
+      text-align: center;
+      font-size: 14px;
+      color: rgba(255,255,255,0.38);
+      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       S6 — O RISCO
+    ───────────────────────────────────────────────────── */
+    #s6 {
+      background: radial-gradient(ellipse 100% 70% at 50% 50%, rgba(155,28,28,0.18) 0%, transparent 65%),
+                  var(--ink-950);
+      text-align: center;
+    }
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin: 44px 0;
+    }
+    .risk-card {
+      padding: 32px 24px;
+      border-radius: 16px;
+      border: 1px solid rgba(200,30,30,0.22);
+      background: rgba(200,30,30,0.06);
+      text-align: center;
+    }
+    .risk-card:hover { border-color: rgba(200,30,30,0.40); background: rgba(200,30,30,0.10); }
+    .risk-icon { font-size: 28px; margin-bottom: 14px; display: block; }
+    .risk-val {
+      font-family: var(--serif);
+      font-size: clamp(28px, 3.5vw, 44px);
+      color: rgba(255,180,180,0.95);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .risk-label { font-size: 13px; color: rgba(255,255,255,0.50); line-height: 1.5; }
+    .risk-desc { font-size: 12px; color: rgba(255,150,150,0.50); margin-top: 8px; line-height: 1.4; }
+
+    /* ─────────────────────────────────────────────────────
+       S10 — 3 PILARES
+    ───────────────────────────────────────────────────── */
+    #s10 {
+      background: linear-gradient(160deg, var(--ink-900) 0%, var(--ink-950) 100%);
+    }
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin: 44px 0;
+    }
+    .pillar {
+      padding: 36px 28px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color 0.3s, background 0.3s, transform 0.3s;
+    }
+    .pillar:hover { border-color: rgba(217,119,87,0.30); background: rgba(217,119,87,0.05); transform: translateY(-4px); }
+    .pillar-num {
+      font-family: var(--serif);
+      font-size: 44px;
+      line-height: 1;
+      color: rgba(217,119,87,0.40);
+    }
+    .pillar-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.92);
+      line-height: 1.2;
+    }
+    .pillar-cat {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--copper-400);
+    }
+    .pillar-items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .pillar-items li {
+      font-size: 14px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.5;
+      padding-left: 16px;
+      position: relative;
+    }
+    .pillar-items li::before {
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: var(--copper-500);
+      font-weight: 700;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       S11 — RALIE
+    ───────────────────────────────────────────────────── */
+    #s11 {
+      background: var(--ink-950);
+    }
+    .ralie-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 80px;
+      align-items: center;
+      margin-top: 44px;
+    }
+    .ralie-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .rstep {
+      display: flex;
+      gap: 20px;
+      padding: 20px 0;
+      border-left: 2px solid rgba(255,255,255,0.09);
+      padding-left: 24px;
+      margin-left: 12px;
+      position: relative;
+      transition: border-color 0.3s;
+    }
+    .rstep:hover { border-color: var(--copper-500); }
+    .rstep::before {
+      content: "";
+      position: absolute;
+      left: -7px; top: 24px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--ink-900);
+      border: 2px solid rgba(255,255,255,0.18);
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .rstep:hover::before { border-color: var(--copper-400); background: rgba(217,119,87,0.15); }
+    .rstep-title { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.88); margin-bottom: 5px; }
+    .rstep-text  { font-size: 13.5px; color: rgba(255,255,255,0.48); line-height: 1.6; }
+    /* Live panel preview */
+    .ralie-panel-preview {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .rp-header {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .rp-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .rp-score {
+      flex-shrink: 0;
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .rp-score.hot  { background: rgba(185,28,28,0.25); color: rgba(255,160,160,0.95); }
+    .rp-score.warm { background: rgba(180,120,20,0.20); color: rgba(255,210,100,0.95); }
+    .rp-score.cold { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.45); }
+    .rp-info { flex: 1; }
+    .rp-name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.82); }
+    .rp-meta { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+    .rp-badge {
+      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .rp-badge.hot  { background: rgba(185,28,28,0.25); color: rgba(255,150,150,0.90); }
+    .rp-badge.warm { background: rgba(180,120,20,0.18); color: rgba(255,200,80,0.90); }
+
+    /* ─────────────────────────────────────────────────────
+       S12 — LEI 15.269/2025
+    ───────────────────────────────────────────────────── */
+    #s12 {
+      background: linear-gradient(170deg, var(--ink-900) 0%, var(--ink-950) 100%);
+    }
+    .lei-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 44px 0;
+    }
+    .lei-card {
+      padding: 28px 26px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .lei-card:hover { border-color: rgba(217,119,87,0.25); background: rgba(217,119,87,0.04); }
+    .lei-year {
+      flex-shrink: 0;
+      background: rgba(217,119,87,0.22);
+      color: var(--copper-200);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(217,119,87,0.35);
+      margin-top: 2px;
+    }
+    .lei-card-title { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.88); margin-bottom: 6px; }
+    .lei-card-text  { font-size: 13.5px; color: rgba(255,255,255,0.50); line-height: 1.6; }
+    .lei-highlight {
+      background: rgba(217,119,87,0.10);
+      border: 1px solid rgba(217,119,87,0.28);
+      border-radius: 14px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-top: 8px;
+    }
+    .lei-hl-icon { font-size: 28px; flex-shrink: 0; }
+    .lei-hl-text { font-size: 15px; color: rgba(255,255,255,0.75); line-height: 1.6; }
+    .lei-hl-text strong { color: var(--copper-200); font-weight: 700; }
+
+    /* ─────────────────────────────────────────────────────
+       S13 — CTA
+    ───────────────────────────────────────────────────── */
+    #s13 {
+      background: radial-gradient(ellipse 100% 80% at 50% 40%, rgba(189,84,40,0.20) 0%, transparent 60%),
+                  var(--ink-950);
+      text-align: center;
+    }
+    .cta-divider {
+      width: 40px; height: 2px;
+      background: var(--copper-500);
+      border-radius: 2px;
+      margin: 24px auto;
+    }
+    .cta-firms {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.55);
+      margin-top: 36px;
+      flex-wrap: wrap;
+    }
+    .cta-firms strong { color: rgba(255,255,255,0.88); }
+    .cta-firms .sep { color: rgba(255,255,255,0.22); font-size: 13px; }
+
+    /* ─────────────────────────────────────────────────────
+       FOOTER
+    ───────────────────────────────────────────────────── */
+    footer {
+      background: var(--ink-950);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 32px 48px;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.22);
+      scroll-snap-align: none;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       RESPONSIVE
+    ───────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      section { padding: 60px 28px; }
+      .market-stats, .risk-grid, .pillars-grid, .lei-grid { grid-template-columns: 1fr; }
+      .split-layout, .ralie-layout { grid-template-columns: 1fr; gap: 40px; }
+      .energy-flow { flex-wrap: wrap; gap: 12px; }
+      .ecable { flex: 0 0 100%; flex-direction: row; justify-content: center; height: 28px; }
+      .ecable-track { width: 80px; }
+      .cycle-flow { flex-wrap: wrap; gap: 8px; }
+      .carrow { flex: 0 0 100%; text-align: center; }
+      #nav-dots { display: none; }
+      .excl-layout { grid-template-columns: 1fr; }
+      .resp-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ─────────────────────────────────────────────────────
+       PHASE DRAWER (Apple-style bottom sheet)
+    ───────────────────────────────────────────────────── */
+    /* ── Phase Modal — Apple-style centered float ── */
+    .phase-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0);
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
+      z-index: 799;
+      pointer-events: none;
+      transition: background 0.35s var(--ease-out), backdrop-filter 0.40s var(--ease-out);
+    }
+    .phase-overlay.open {
+      background: rgba(0,0,0,0.48);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      pointer-events: auto;
+    }
+    .phase-modal {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.95);
+      width: min(700px, 92vw);
+      max-height: 84vh;
+      overflow-y: auto;
+      background: rgba(20, 18, 16, 0.94);
+      border: 1px solid rgba(255,255,255,0.13);
+      border-radius: 22px;
+      padding: 36px 40px 40px;
+      box-shadow: 0 40px 90px rgba(0,0,0,0.60), 0 0 0 0.5px rgba(255,255,255,0.05) inset;
+      z-index: 800;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.38s var(--ease-out), transform 0.38s var(--ease-out);
+    }
+    .phase-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .pd-close {
+      position: absolute; top: 20px; right: 28px;
+      background: rgba(255,255,255,0.08);
+      border: none; color: rgba(255,255,255,0.55);
+      font-size: 16px; width: 32px; height: 32px;
+      border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+    .pd-close:hover { background: rgba(255,255,255,0.16); color: #fff; }
+    .pd-kicker {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--copper-400); margin-bottom: 8px;
+    }
+    .pd-title {
+      font-family: var(--serif); font-size: clamp(22px, 3vw, 30px);
+      color: #fff; margin-bottom: 24px; line-height: 1.2;
+    }
+    .pd-body {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 700px) { .pd-body { grid-template-columns: 1fr; } }
+    .pd-col-title {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.35); margin-bottom: 12px;
+    }
+    .pd-list {
+      list-style: none; display: flex; flex-direction: column; gap: 8px;
+    }
+    .pd-list li {
+      font-size: 14px; color: rgba(255,255,255,0.72);
+      line-height: 1.5; display: flex; gap: 8px; align-items: flex-start;
+    }
+    .pd-list li::before {
+      content: '—'; color: var(--copper-400); font-weight: 700; flex-shrink: 0;
+    }
+    .pd-list.risks li::before { content: '▲'; color: #f87171; font-size: 11px; margin-top: 3px; }
+    .pd-desc {
+      font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.7;
+      margin-bottom: 20px; grid-column: 1 / -1;
+    }
+    /* Click indicator on cphase cards */
+    .cphase { position: relative; }
+    .cphase::after {
+      content: '↗';
+      position: absolute; bottom: 8px; right: 10px;
+      font-size: 11px; opacity: 0.35;
+      transition: opacity 0.2s;
+    }
+    .cphase:hover::after { opacity: 0.8; }
+
+    /* ─────────────────────────────────────────────────────
+       PENALTY CALLOUT
+    ───────────────────────────────────────────────────── */
+    .penalty-callout {
+      display: flex; align-items: flex-start; gap: 16px;
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.22);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin: 0 auto;
+      max-width: 680px;
+      text-align: left;
+    }
+    .pc-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .pc-title { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.88); margin-bottom: 6px; }
+    .pc-text  { font-size: 14px; color: rgba(255,255,255,0.50); line-height: 1.6; }
+
+    /* ─────────────────────────────────────────────────────
+       S8 — EXCLUDENTE DE RESPONSABILIDADE
+    ───────────────────────────────────────────────────── */
+    #s8 { background: linear-gradient(160deg, #0f1629 0%, var(--ink-950) 60%); }
+    .excl-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 40px;
+      align-items: start;
+    }
+    .excl-col-title {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.32); margin-bottom: 16px;
+    }
+    .excl-cause-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .excl-cause {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 16px;
+    }
+    .ec-icon { font-size: 22px; margin-bottom: 8px; }
+    .ec-title { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.80); margin-bottom: 5px; }
+    .ec-text  { font-size: 12px; color: rgba(255,255,255,0.42); line-height: 1.5; }
+    .excl-list {
+      list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px;
+    }
+    .excl-list li {
+      font-size: 14px; color: rgba(255,255,255,0.65);
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .excl-list li::before { content: '✓'; color: #34d399; font-weight: 700; flex-shrink: 0; }
+    .excl-flow-title {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.32); margin-bottom: 12px;
+    }
+    .excl-steps { display: flex; flex-direction: column; gap: 8px; }
+    .excl-step {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 10px 14px;
+    }
+    .es-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(217,119,87,0.20); color: var(--copper-300);
+      font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .es-text { font-size: 13px; color: rgba(255,255,255,0.60); line-height: 1.5; }
+
+    /* ─────────────────────────────────────────────────────
+       S9 — RESPONSABILIDADE DO TITULAR
+    ───────────────────────────────────────────────────── */
+    #s9 { background: linear-gradient(180deg, var(--ink-950) 0%, var(--ink-900) 100%); }
+    .resp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 36px;
+    }
+    .resp-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 24px;
+    }
+    .resp-card-highlight {
+      border-color: rgba(217,119,87,0.30);
+      background: rgba(217,119,87,0.05);
+    }
+    .rc-icon { font-size: 24px; margin-bottom: 10px; }
+    .rc-title { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.85); margin-bottom: 14px; }
+    .rc-list {
+      list-style: none; display: flex; flex-direction: column; gap: 8px;
+    }
+    .rc-list li {
+      font-size: 13px; color: rgba(255,255,255,0.55);
+      display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;
+    }
+    .rc-list li::before { content: '·'; color: var(--copper-400); font-weight: 900; flex-shrink: 0; font-size: 16px; line-height: 1.2; }
+    /* ─────────────────────────────────────────────────────
+       S7 — CALCULADORA DE EXPOSIÇÃO
+    ───────────────────────────────────────────────────── */
+    #s7 { background: radial-gradient(ellipse 90% 60% at 50% 50%, rgba(155,28,28,0.10) 0%, transparent 65%), var(--ink-950); }
+
+    .calc-types {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 32px 0 28px;
+    }
+    @media (max-width: 700px) { .calc-types { grid-template-columns: 1fr; } }
+
+    .calc-type-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 16px;
+      padding: 22px 20px 16px;
+      display: flex; flex-direction: column; gap: 6px;
+      transition: border-color 0.3s;
+    }
+    .calc-type-card:hover { border-color: rgba(217,119,87,0.30); }
+    .ctc-badge {
+      display: inline-block;
+      background: rgba(217,119,87,0.18); color: var(--copper-300);
+      border: 1px solid rgba(217,119,87,0.30);
+      font-size: 11px; font-weight: 800;
+      letter-spacing: 0.10em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 6px;
+      align-self: flex-start; margin-bottom: 4px;
+    }
+    .ctc-badge-pch {
+      background: rgba(100,180,255,0.12); color: rgba(160,210,255,0.85);
+      border-color: rgba(100,180,255,0.20);
+    }
+    .ctc-full { font-size: 13px; color: rgba(255,255,255,0.55); }
+    .ctc-range { font-size: 18px; font-weight: 700; color: #fff; margin: 2px 0; }
+    .ctc-range strong { color: var(--copper-300); }
+    .ctc-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 8px 0; }
+    .ctc-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12.5px;
+    }
+    .ctc-label { color: rgba(255,255,255,0.45); }
+    .ctc-val { color: rgba(255,255,255,0.80); font-weight: 600; }
+    .ctc-val-red { color: rgba(255,160,160,0.90); }
+    .ctc-risk { margin-top: 2px; }
+    .ctc-note { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 6px; }
+
+    /* Calculator box */
+    .calc-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 20px;
+      padding: 28px 28px 20px;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .cb-title {
+      font-size: 13px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.10em;
+      color: rgba(255,255,255,0.35); margin-bottom: 20px;
+    }
+    .cb-controls { margin-bottom: 24px; }
+    .cb-type-toggle {
+      display: flex; gap: 8px; margin-bottom: 20px;
+    }
+    .cbt {
+      padding: 8px 24px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: transparent; color: rgba(255,255,255,0.45);
+      font-family: var(--sans); font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .cbt.active {
+      background: rgba(217,119,87,0.18);
+      border-color: rgba(217,119,87,0.40);
+      color: var(--copper-200);
+    }
+    .cbt:hover:not(.active) { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.70); }
+    .cb-inputs { display: flex; flex-direction: column; gap: 16px; }
+    .cb-field { display: flex; flex-direction: column; gap: 6px; }
+    .cb-label { font-size: 12px; color: rgba(255,255,255,0.40); }
+    .cb-slider {
+      -webkit-appearance: none;
+      width: 100%; height: 4px; border-radius: 2px;
+      background: rgba(255,255,255,0.12); outline: none; cursor: pointer;
+    }
+    .cb-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--copper-400);
+      cursor: pointer; transition: background 0.2s;
+    }
+    .cb-slider::-webkit-slider-thumb:hover { background: var(--copper-300); }
+    .cb-slider-val { font-size: 13px; color: rgba(255,255,255,0.60); text-align: right; }
+    .cb-results {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-bottom: 16px;
+    }
+    @media (max-width: 600px) { .cb-results { grid-template-columns: 1fr; } }
+    .cb-result-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 12px 14px;
+    }
+    .cbr-risk { border-color: rgba(200,30,30,0.18); background: rgba(200,30,30,0.04); }
+    .cbr-label { font-size: 11.5px; color: rgba(255,255,255,0.40); margin-bottom: 6px; }
+    .cbr-perc  { font-size: 10px; color: rgba(255,255,255,0.25); font-style: italic; }
+    .cbr-val { font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.85); }
+    .cbr-risk .cbr-val { color: rgba(255,160,160,0.90); }
+    .cb-result-total {
+      grid-column: 1 / -1;
+      background: rgba(217,119,87,0.10);
+      border: 1px solid rgba(217,119,87,0.25);
+      border-radius: 10px; padding: 14px 16px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .cbr-total {
+      font-family: var(--serif);
+      font-size: clamp(22px, 2.5vw, 28px);
+      color: var(--copper-200);
+    }
+    .cb-disclaimer {
+      font-size: 10.5px; color: rgba(255,255,255,0.22); line-height: 1.5;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       S-PREOBRA — Fase Pré-obra
+    ───────────────────────────────────────────────────── */
+    #s-preobra {
+      background: linear-gradient(160deg, var(--ink-900) 0%, var(--ink-950) 100%);
+    }
+    .preobra-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin: 40px 0;
+    }
+    .preobra-card {
+      padding: 26px 24px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .preobra-card:hover { border-color: rgba(217,119,87,0.30); background: rgba(217,119,87,0.05); }
+    .preobra-card.critical { border-color: rgba(248,113,113,0.22); background: rgba(248,113,113,0.05); }
+    .preobra-card.critical:hover { border-color: rgba(248,113,113,0.40); background: rgba(248,113,113,0.09); }
+    .pb-icon { font-size: 24px; }
+    .pb-title { font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.88); }
+    .pb-badge {
+      display: inline-block;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 2px 9px; border-radius: 6px; align-self: flex-start;
+      background: rgba(248,113,113,0.20); color: rgba(255,160,160,0.90);
+      border: 1px solid rgba(248,113,113,0.30);
+    }
+    .pb-text { font-size: 13.5px; color: rgba(255,255,255,0.50); line-height: 1.65; }
+    .pb-steps { display: flex; flex-direction: column; gap: 8px; }
+    .pb-step {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px; color: rgba(255,255,255,0.62);
+    }
+    .pb-step-num {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(217,119,87,0.22); color: var(--copper-300);
+      font-size: 10px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+    }
+    .pb-warn {
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.20);
+      border-radius: 10px; padding: 10px 14px;
+      font-size: 12.5px; color: rgba(255,180,180,0.75); line-height: 1.5;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       S-OPTESTE — Operação em Teste
+    ───────────────────────────────────────────────────── */
+    #s-opteste {
+      background: linear-gradient(170deg, #0f1629 0%, var(--ink-950) 70%);
+    }
+    .opteste-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+      margin-top: 40px;
+    }
+    .opteste-trap {
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.25);
+      border-radius: 16px; padding: 22px 24px;
+      margin-bottom: 24px;
+    }
+    .ot-trap-title { font-size: 15px; font-weight: 700; color: rgba(255,150,150,0.90); margin-bottom: 8px; }
+    .ot-trap-text  { font-size: 13.5px; color: rgba(255,255,255,0.55); line-height: 1.65; }
+    .opteste-prazo {
+      background: rgba(217,119,87,0.10);
+      border: 1px solid rgba(217,119,87,0.28);
+      border-radius: 14px; padding: 20px 24px;
+      text-align: center; margin-bottom: 20px;
+    }
+    .op-prazo-val {
+      font-family: var(--serif);
+      font-size: clamp(36px, 4.5vw, 54px);
+      color: var(--copper-200); line-height: 1; margin-bottom: 8px;
+    }
+    .op-prazo-label { font-size: 13px; color: rgba(255,255,255,0.48); line-height: 1.5; }
+    .opteste-docs { display: flex; flex-direction: column; gap: 8px; }
+    .ot-doc {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; padding: 10px 14px;
+    }
+    .ot-doc-icon { flex-shrink: 0; font-size: 14px; }
+    .ot-doc-text { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+    .opteste-steps { display: flex; flex-direction: column; gap: 0; }
+    .ot-step {
+      display: flex; gap: 16px;
+      padding: 16px 0 16px 22px;
+      border-left: 2px solid rgba(255,255,255,0.09);
+      margin-left: 10px;
+      position: relative;
+      transition: border-color 0.3s;
+    }
+    .ot-step:hover { border-color: var(--copper-500); }
+    .ot-step::before {
+      content: "";
+      position: absolute; left: -6px; top: 22px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--ink-900);
+      border: 2px solid rgba(255,255,255,0.18);
+      transition: border-color 0.3s;
+    }
+    .ot-step:hover::before { border-color: var(--copper-400); }
+    .ot-step-title { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.85); margin-bottom: 4px; }
+    .ot-step-text  { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+    .ot-sec-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.09em; color: rgba(255,255,255,0.28);
+      margin-bottom: 12px;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       S6 V2 — 3 Camadas de Penalidade
+    ───────────────────────────────────────────────────── */
+    .penalty-layers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin: 40px 0 24px;
+    }
+    .player {
+      border-radius: 16px; padding: 26px 22px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .player-1 { background: rgba(100,130,220,0.07); border: 1px solid rgba(100,130,220,0.22); }
+    .player-2 { background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.22); }
+    .player-3 { background: rgba(251,191,36,0.06);  border: 1px solid rgba(251,191,36,0.22); }
+    .player-num { font-family: var(--serif); font-size: 36px; line-height: 1; opacity: 0.28; }
+    .player-1 .player-num { color: rgba(160,185,255,1); }
+    .player-2 .player-num { color: rgba(255,140,140,1); }
+    .player-3 .player-num { color: rgba(255,220,80,1); }
+    .player-cat {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.10em;
+    }
+    .player-1 .player-cat { color: rgba(160,185,255,0.65); }
+    .player-2 .player-cat { color: rgba(255,140,140,0.65); }
+    .player-3 .player-cat { color: rgba(255,220,80,0.65); }
+    .player-title { font-size: 17px; font-weight: 700; color: rgba(255,255,255,0.88); line-height: 1.2; }
+    .player-text  { font-size: 13px; color: rgba(255,255,255,0.48); line-height: 1.65; }
+    .player-highlight {
+      font-size: 12px; font-weight: 600;
+      padding: 8px 12px; border-radius: 8px; line-height: 1.5;
+      margin-top: 4px;
+    }
+    .player-1 .player-highlight { background: rgba(100,130,220,0.14); color: rgba(160,185,255,0.85); }
+    .player-2 .player-highlight { background: rgba(248,113,113,0.12); color: rgba(255,150,150,0.85); }
+    .player-3 .player-highlight { background: rgba(251,191,36,0.12);  color: rgba(255,220,80,0.85); }
+    .penalty-cumul {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px; padding: 16px 28px;
+      max-width: 740px; margin: 0 auto 24px;
+      font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.65;
+    }
+    .penalty-cumul strong { color: rgba(255,255,255,0.88); }
+    .escalonamento {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; flex-wrap: wrap; margin: 20px auto 0; max-width: 680px;
+    }
+    .esc-step {
+      padding: 8px 16px; border-radius: 20px;
+      font-size: 12px; font-weight: 600;
+    }
+    .esc-step.e1 { background: rgba(100,200,120,0.12); border: 1px solid rgba(100,200,120,0.25); color: rgba(160,240,180,0.82); }
+    .esc-step.e2 { background: rgba(251,191,36,0.10);  border: 1px solid rgba(251,191,36,0.24); color: rgba(255,220,80,0.82); }
+    .esc-step.e3 { background: rgba(248,113,113,0.10); border: 1px solid rgba(248,113,113,0.24); color: rgba(255,150,150,0.82); }
+    .esc-step.e4 { background: rgba(180,30,30,0.15);   border: 1px solid rgba(200,30,30,0.32); color: rgba(255,130,130,0.82); }
+    .esc-arrow { color: rgba(255,255,255,0.20); font-size: 14px; }
+    .esc-note { width: 100%; text-align: center; font-size: 12px; color: rgba(255,255,255,0.28); margin-top: 8px; }
+
+    @media (max-width: 900px) {
+      .preobra-grid { grid-template-columns: 1fr; }
+      .opteste-layout { grid-template-columns: 1fr; gap: 36px; }
+      .penalty-layers { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Progress bar -->
+  <div id="progress-bar"></div>
+
+  <!-- Navigation dots -->
+  <nav id="nav-dots" aria-label="Navegação por seções">
+    <div class="nav-dot active" data-target="s1" title="Início"></div>
+    <div class="nav-dot" data-target="s2" title="O Mercado"></div>
+    <div class="nav-dot" data-target="s3" title="Sistema Elétrico"></div>
+    <div class="nav-dot" data-target="s4" title="A Outorga"></div>
+    <div class="nav-dot" data-target="s5" title="Ciclo de Vida"></div>
+    <div class="nav-dot" data-target="s-preobra" title="Fase Pré-obra"></div>
+    <div class="nav-dot" data-target="s-opteste" title="Operação em Teste"></div>
+    <div class="nav-dot" data-target="s6" title="Penalidades"></div>
+    <div class="nav-dot" data-target="s7" title="Calculadora de Exposição"></div>
+    <div class="nav-dot" data-target="s8" title="Excludente"></div>
+    <div class="nav-dot" data-target="s9" title="Responsabilidade"></div>
+    <div class="nav-dot" data-target="s10" title="3 Pilares"></div>
+    <div class="nav-dot" data-target="s11" title="Inteligência RALIE"></div>
+    <div class="nav-dot" data-target="s12" title="Lei 15.269/2025"></div>
+    <div class="nav-dot" data-target="s13" title="Fale com a gente"></div>
+  </nav>
+
+  <!-- Phase Detail Drawer -->
+  <div id="phase-overlay" class="phase-overlay"></div>
+  <div id="phase-modal" class="phase-modal" role="dialog" aria-modal="true">
+    <button class="pd-close" id="pd-close" aria-label="Fechar">✕</button>
+    <div class="pd-kicker" id="pd-kicker"></div>
+    <h3 class="pd-title" id="pd-title"></h3>
+    <div class="pd-body" id="pd-body"></div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────
+       S1 — HERO
+  ───────────────────────────────────────────────────── -->
+  <section id="s1">
+    <div class="section-inner">
+      <p class="kicker reveal">Assessoria regulatória especializada</p>
+      <h1 class="display-xl reveal reveal-delay-1">
+        Do leilão<br>à portaria.
+      </h1>
+      <p class="body-lg reveal reveal-delay-2" style="margin-top:24px;">
+        Geração de energia elétrica no Brasil exige muito mais do que ganhar um leilão.<br>
+        Cada outorga cria um ciclo de <em>obrigações regulatórias</em> críticas — e a maioria dos empreendedores enfrenta esse ciclo sem assessoria especializada.
+      </p>
+      <div class="hero-firms reveal reveal-delay-3">
+        <strong>Edson Araújo Advogados</strong>
+        <span class="sep">em parceria com</span>
+        <strong>Thiago Fernandes Advogado</strong>
+      </div>
+    </div>
+    <div class="scroll-cue" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+      <span>Rolar</span>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S2 — MERCADO
+  ───────────────────────────────────────────────────── -->
+  <section id="s2">
+    <div class="section-inner">
+      <p class="kicker reveal">Dimensão do mercado · RALIE / ANEEL</p>
+      <h2 class="display-lg reveal reveal-delay-1">
+        O maior ciclo de expansão de geração elétrica da história do Brasil.
+      </h2>
+
+      <div class="market-stats reveal reveal-delay-2">
+        <div class="mstat primary">
+          <div class="mstat-sup">Estimativa de investimento</div>
+          <div class="mstat-val">R$ 653<span class="mstat-unit">bilhões</span></div>
+          <div class="mstat-label">em projetos ativos de geração</div>
+          <div class="mstat-note">Baseado em CAPEX médio de R$ 5,5 M/MW</div>
+        </div>
+        <div class="mstat">
+          <div class="mstat-sup">Potência em implantação</div>
+          <div class="mstat-val">118.839<span class="mstat-unit">MW</span></div>
+          <div class="mstat-label">capacidade a ser instalada · 2026–2032</div>
+          <div class="mstat-note">Painel Tendência de Expansão · RALIE</div>
+        </div>
+        <div class="mstat">
+          <div class="mstat-sup">Empreendimentos monitorados</div>
+          <div class="mstat-val">2.742<span class="mstat-unit">usinas</span></div>
+          <div class="mstat-label">em expansão — universo de atuação</div>
+          <div class="mstat-note">Situação: Não Iniciada ou Em Andamento</div>
+        </div>
+      </div>
+
+      <p class="body-md reveal reveal-delay-3">
+        Todo projeto neste universo tem obrigações regulatórias ativas com a ANEEL — prazos contratuais, declarações mensais, licenças ambientais, conexão à rede. A maioria não conta com assessoria especializada nessa fase.
+      </p>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S3 — SISTEMA ELÉTRICO
+  ───────────────────────────────────────────────────── -->
+  <section id="s3">
+    <div class="section-inner">
+      <p class="kicker reveal">Sistema Elétrico Nacional</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        A energia nasce na geração.<br>
+        <em>Nossa atuação começa aqui.</em>
+      </h2>
+
+      <div class="energy-flow reveal reveal-delay-2">
+
+        <!-- GERAÇÃO -->
+        <div class="enode gen">
+          <div class="enode-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="24" r="8" fill="rgba(217,119,87,0.85)"/>
+              <line x1="20" y1="10" x2="20" y2="7" stroke="rgba(217,119,87,0.9)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="20" y1="41" x2="20" y2="38" stroke="rgba(217,119,87,0.9)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="6" y1="24" x2="9" y2="24" stroke="rgba(217,119,87,0.9)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="34" y1="24" x2="31" y2="24" stroke="rgba(217,119,87,0.9)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="10" y1="14" x2="12" y2="16" stroke="rgba(217,119,87,0.9)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="28" y1="32" x2="30" y2="34" stroke="rgba(217,119,87,0.9)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="30" y1="14" x2="28" y2="16" stroke="rgba(217,119,87,0.9)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="12" y1="32" x2="10" y2="34" stroke="rgba(217,119,87,0.9)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="46" y1="42" x2="46" y2="58" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+              <circle cx="46" cy="37" r="2" fill="rgba(255,255,255,0.6)"/>
+              <line x1="46" y1="37" x2="37" y2="31" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+              <line x1="46" y1="37" x2="55" y2="31" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+              <line x1="46" y1="37" x2="46" y2="28" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+              <path d="M8 52 C8 46 16 44 16 52 C16 56 12 58 12 58 C12 58 8 56 8 52Z" fill="rgba(100,180,255,0.65)"/>
+            </svg>
+          </div>
+          <div class="enode-name">GERAÇÃO</div>
+          <div class="enode-sub">Solar · Eólica · Hídrica</div>
+          <div class="enode-badge">★ Nossa atuação</div>
+        </div>
+
+        <!-- CABO 1 -->
+        <div class="ecable">
+          <div class="ecable-label">Alta tensão</div>
+          <div class="ecable-track">
+            <span class="eparticle pc-copper" style="animation-delay:0s"></span>
+            <span class="eparticle pc-copper" style="animation-delay:0.5s"></span>
+            <span class="eparticle pc-copper" style="animation-delay:1.0s"></span>
+          </div>
+        </div>
+
+        <!-- TRANSMISSÃO -->
+        <div class="enode">
+          <div class="enode-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="32" y1="6" x2="20" y2="52" stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+              <line x1="32" y1="6" x2="44" y2="52" stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+              <line x1="24" y1="24" x2="40" y2="24" stroke="rgba(255,255,255,0.40)" stroke-width="1.5"/>
+              <line x1="22" y1="38" x2="42" y2="38" stroke="rgba(255,255,255,0.40)" stroke-width="1.5"/>
+              <path d="M 6 20 Q 32 26 58 20" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="1.2"/>
+              <path d="M 6 25 Q 32 31 58 25" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <div class="enode-name">TRANSMISSÃO</div>
+          <div class="enode-sub">345–765 kV · Torres</div>
+        </div>
+
+        <!-- CABO 2 -->
+        <div class="ecable">
+          <div class="ecable-label">Média tensão</div>
+          <div class="ecable-track">
+            <span class="eparticle pc-blue" style="animation-delay:0.2s"></span>
+            <span class="eparticle pc-blue" style="animation-delay:0.7s"></span>
+            <span class="eparticle pc-blue" style="animation-delay:1.2s"></span>
+          </div>
+        </div>
+
+        <!-- DISTRIBUIÇÃO -->
+        <div class="enode">
+          <div class="enode-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="32" y1="8" x2="32" y2="30" stroke="rgba(100,180,255,0.65)" stroke-width="2"/>
+              <line x1="32" y1="20" x2="16" y2="36" stroke="rgba(100,180,255,0.55)" stroke-width="1.5"/>
+              <line x1="32" y1="20" x2="48" y2="36" stroke="rgba(100,180,255,0.55)" stroke-width="1.5"/>
+              <line x1="16" y1="36" x2="8"  y2="52" stroke="rgba(100,180,255,0.40)" stroke-width="1.2"/>
+              <line x1="16" y1="36" x2="24" y2="52" stroke="rgba(100,180,255,0.40)" stroke-width="1.2"/>
+              <line x1="48" y1="36" x2="40" y2="52" stroke="rgba(100,180,255,0.40)" stroke-width="1.2"/>
+              <line x1="48" y1="36" x2="56" y2="52" stroke="rgba(100,180,255,0.40)" stroke-width="1.2"/>
+              <rect x="5"  y="52" width="7" height="7" rx="1" fill="rgba(100,180,255,0.28)"/>
+              <rect x="21" y="52" width="7" height="7" rx="1" fill="rgba(100,180,255,0.28)"/>
+              <rect x="37" y="52" width="7" height="7" rx="1" fill="rgba(100,180,255,0.28)"/>
+              <rect x="53" y="52" width="7" height="7" rx="1" fill="rgba(100,180,255,0.28)"/>
+            </svg>
+          </div>
+          <div class="enode-name">DISTRIBUIÇÃO</div>
+          <div class="enode-sub">13,8 kV · Redes locais</div>
+        </div>
+
+        <!-- CABO 3 -->
+        <div class="ecable">
+          <div class="ecable-label">Baixa tensão</div>
+          <div class="ecable-track">
+            <span class="eparticle pc-green" style="animation-delay:0.1s"></span>
+            <span class="eparticle pc-green" style="animation-delay:0.7s"></span>
+          </div>
+        </div>
+
+        <!-- COMERCIALIZAÇÃO -->
+        <div class="enode">
+          <div class="enode-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6"  y="22" width="20" height="36" rx="2" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.30)" stroke-width="1.2"/>
+              <rect x="28" y="30" width="16" height="28" rx="2" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.22)" stroke-width="1.2"/>
+              <rect x="46" y="36" width="12" height="22" rx="1.5" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+              <rect x="9"  y="26" width="4" height="4" rx="0.5" fill="rgba(255,230,120,0.40)"/>
+              <rect x="16" y="26" width="4" height="4" rx="0.5" fill="rgba(255,230,120,0.40)"/>
+              <rect x="9"  y="33" width="4" height="4" rx="0.5" fill="rgba(255,230,120,0.35)"/>
+              <rect x="16" y="33" width="4" height="4" rx="0.5" fill="rgba(255,230,120,0.35)"/>
+              <rect x="9"  y="40" width="4" height="4" rx="0.5" fill="rgba(255,230,120,0.30)"/>
+              <rect x="16" y="40" width="4" height="4" rx="0.5" fill="rgba(255,230,120,0.30)"/>
+              <rect x="31" y="34" width="4" height="4" rx="0.5" fill="rgba(255,230,120,0.35)"/>
+              <rect x="37" y="34" width="4" height="4" rx="0.5" fill="rgba(255,230,120,0.35)"/>
+              <rect x="31" y="41" width="4" height="4" rx="0.5" fill="rgba(255,230,120,0.30)"/>
+              <rect x="37" y="41" width="4" height="4" rx="0.5" fill="rgba(255,230,120,0.30)"/>
+            </svg>
+          </div>
+          <div class="enode-name">COMERCIALIZAÇÃO</div>
+          <div class="enode-sub">Mercado livre · Consumidores</div>
+        </div>
+
+      </div><!-- end energy-flow -->
+
+      <p class="body-md reveal reveal-delay-3" style="max-width:720px;">
+        A <strong style="color:var(--copper-300);">Lei 15.269/2025</strong> está reformulando toda a cadeia — abrindo o mercado livre a industriais (2027) e residenciais (2028), encerrando subsídios históricos de transmissão e criando novas obrigações regulatórias para quem gera energia.
+      </p>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S4 — A OUTORGA
+  ───────────────────────────────────────────────────── -->
+  <section id="s4">
+    <div class="section-inner">
+      <div class="split-layout">
+        <div>
+          <p class="kicker reveal">O ponto de partida</p>
+          <h2 class="display-md reveal reveal-delay-1">
+            A outorga não é o fim.<br>
+            <span class="em-copper">É onde tudo começa.</span>
+          </h2>
+          <p class="body-lg reveal reveal-delay-2" style="margin-top:24px;">
+            Quem vence um leilão da ANEEL recebe uma outorga — um ato jurídico que autoriza a construção e a operação de uma usina. Junto com esse direito vêm obrigações de prazo, declaratórias e técnicas que se estendem por toda a fase de implantação.
+          </p>
+          <p class="body-md reveal reveal-delay-3" style="margin-top:16px;">
+            O cronograma comprometido é uma obrigação contratual. Seu descumprimento é infração automática — independentemente das razões do atraso.
+          </p>
+        </div>
+        <div class="split-right reveal reveal-delay-2">
+          <p style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Modalidades de outorga</p>
+          <div class="outorga-types">
+            <div class="otype">
+              <span class="otype-badge auth">Autorização</span>
+              <div class="otype-text">
+                <strong>Renováveis em geral</strong> — solar, eólica, PCH, biomassa. Processo administrativo na ANEEL, prazo regulado por resolução. Principal modalidade do nosso portfólio.
+              </div>
+            </div>
+            <div class="otype">
+              <span class="otype-badge conc">Concessão</span>
+              <div class="otype-text">
+                <strong>UHEs acima de 50 MW</strong> — exige licitação pública e contrato de concessão com a União. Prazo de até 35 anos, renovável.
+              </div>
+            </div>
+            <div class="otype">
+              <span class="otype-badge perm">Permissão</span>
+              <div class="otype-text">
+                <strong>Aproveitamentos especiais</strong> de caráter precário. Pouco utilizado no segmento de geração.
+              </div>
+            </div>
+          </div>
+          <div class="outorga-card" style="margin-top:4px;">
+            <div class="outorga-card-title">Obrigação central — RAPEEL</div>
+            <p>Todo empreendimento em implantação deve declarar mensalmente o avanço físico das obras até o dia 15 de cada mês. A omissão ou inconsistência é infração passível de autuação.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S5 — CICLO DE VIDA
+  ───────────────────────────────────────────────────── -->
+  <section id="s5">
+    <div class="section-inner">
+      <p class="kicker reveal">Ciclo de vida de um empreendimento</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        Cada fase carrega<br>
+        <span class="em-copper">obrigações específicas.</span>
+      </h2>
+      <p class="body-md reveal reveal-delay-2" style="margin-top:16px;max-width:680px;">
+        Atuamos nas três fases centrais — onde os riscos regulatórios são mais frequentes e menos compreendidos.
+      </p>
+
+      <div class="cycle-flow reveal reveal-delay-2">
+        <div class="cphase cp-neutral" data-phase="leilao">
+          <div class="cp-label">Leilão / Outorga</div>
+          <div class="cp-sub">Ponto de partida</div>
+        </div>
+        <div class="carrow">→</div>
+        <div class="cphase cp-active" data-phase="preobra">
+          <div class="cp-label">Pré-obra</div>
+          <div class="cp-sub">Licenças · Projetos</div>
+        </div>
+        <div class="carrow">→</div>
+        <div class="cphase cp-active" data-phase="obras">
+          <div class="cp-label">Obras / Implantação</div>
+          <div class="cp-sub">Maior volume de obrigações</div>
+        </div>
+        <div class="carrow">→</div>
+        <div class="cphase cp-amber" data-phase="operacao">
+          <div class="cp-label">Operação</div>
+          <div class="cp-sub">Teste → Comercial</div>
+        </div>
+        <div class="carrow">→</div>
+        <div class="cphase cp-neutral" data-phase="operacao_plena">
+          <div class="cp-label">Operação Plena</div>
+          <div class="cp-sub">Portaria ANEEL</div>
+        </div>
+      </div>
+
+      <div class="cycle-bracket reveal reveal-delay-3">
+        <div class="cbracket-line"></div>
+        <div class="cbracket-text">★ Foco da nossa atuação</div>
+      </div>
+
+      <p class="cycle-note reveal reveal-delay-4">
+        A fase de obras é onde mais ocorrem infrações — declarações incompletas, cronograma em atraso, licenças vencidas. A fase de operação é a mais negligenciada: a usina pode estar gerando energia enquanto o empreendimento está tecnicamente em infração.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ─────────────────────────────────────────────────────
+       S-PREOBRA — FASE PRÉ-OBRA
+  ───────────────────────────────────────────────────── -->
+  <section id="s-preobra">
+    <div class="section-inner">
+      <p class="kicker reveal">A fase mais subestimada</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        A batalha regulatória<br>
+        <span class="em-copper">é vencida ou perdida aqui.</span>
+      </h2>
+      <p class="body-md reveal reveal-delay-2" style="margin-top:16px;max-width:740px;">
+        A pré-obra vai da outorga ao primeiro movimento de terra. A maioria dos empreendedores foca na construção — mas <strong style="color:rgba(255,255,255,0.80);">um erro na pré-obra contamina todas as fases seguintes</strong> e é muito mais difícil de corrigir depois. O cronograma já está correndo.
+      </p>
+
+      <div class="preobra-grid reveal reveal-delay-2">
+
+        <div class="preobra-card">
+          <div class="pb-icon">🌱</div>
+          <div class="pb-title">Licenciamento Ambiental</div>
+          <div class="pb-text">A frente mais crítica e imprevisível. O processo passa por três etapas <em>sequenciais obrigatórias</em> — a ausência de qualquer uma paralisa a fase seguinte.</div>
+          <div class="pb-steps">
+            <div class="pb-step">
+              <span class="pb-step-num">LP</span>
+              <span><strong>Licença Prévia</strong> — viabilidade ambiental. Em muitos leilões exigida como condição de habilitação.</span>
+            </div>
+            <div class="pb-step">
+              <span class="pb-step-num">LI</span>
+              <span><strong>Licença de Instalação</strong> — autoriza obras físicas. Sem ela, nenhuma movimentação de terra é permitida.</span>
+            </div>
+            <div class="pb-step">
+              <span class="pb-step-num">LO</span>
+              <span><strong>Licença de Operação</strong> — necessária antes da operação comercial. Deve ser iniciada durante as obras.</span>
+            </div>
+          </div>
+          <div class="pb-warn">Demora do IBAMA ou órgão estadual não suspende o cronograma ANEEL automaticamente — exige excludente de responsabilidade protocolado dentro do prazo.</div>
+        </div>
+
+        <div class="preobra-card critical">
+          <div class="pb-icon">🔌</div>
+          <div class="pb-title">Conexão à Rede — CUST / CUSD</div>
+          <div class="pb-badge">O problema mais silencioso e mais fatal</div>
+          <div class="pb-text">Uma usina pode ser construída com perfeição técnica e não conseguir ligar na rede porque o contrato de conexão não foi assinado a tempo.</div>
+          <div class="pb-steps">
+            <div class="pb-step">
+              <span class="pb-step-num">1</span>
+              <span>Solicitar ao ONS o <strong>Relatório de Viabilidade de Acesso</strong></span>
+            </div>
+            <div class="pb-step">
+              <span class="pb-step-num">2</span>
+              <span>Aguardar Nota Técnica e <strong>Parecer de Acesso</strong> da transmissora ou distribuidora</span>
+            </div>
+            <div class="pb-step">
+              <span class="pb-step-num">3</span>
+              <span>Assinar <strong>CUST</strong> (transmissão) ou <strong>CUSD</strong> (distribuição)</span>
+            </div>
+          </div>
+          <div class="pb-warn">Mesmo com a usina 100% pronta, sem o contrato de conexão assinado e a linha da transmissora pronta, ela não pode operar.</div>
+        </div>
+
+        <div class="preobra-card">
+          <div class="pb-icon">📋</div>
+          <div class="pb-title">RAPEEL começa no mês 1 da outorga</div>
+          <div class="pb-text">A obrigação declaratória não começa com a obra — começa com a outorga. Desde o <strong style="color:rgba(255,255,255,0.75);">primeiro mês</strong>, o empreendedor deve alimentar o RAPEEL até o dia 15, declarando status das licenças e andamento das negociações de conexão.</div>
+          <div class="pb-warn">A grande maioria dos empreendedores desconhece essa obrigação na pré-obra. A omissão é infração automática — mesmo sem nenhuma obra iniciada, sem nenhum funcionário no campo.</div>
+        </div>
+
+        <div class="preobra-card">
+          <div class="pb-icon">⏳</div>
+          <div class="pb-title">EPC, Equipamentos e Financial Close</div>
+          <div class="pb-text">Em paralelo às licenças e à conexão, o empreendedor precisa fechar contratos de EPC e garantir o financiamento — pré-condições para o início das obras.</div>
+          <div class="pb-steps">
+            <div class="pb-step">
+              <span class="pb-step-num" style="font-size:9px;width:32px;">12–18m</span>
+              <span>Lead time de <strong>aerogeradores e módulos fotovoltaicos</strong> (Europa/China) — empresas que não fecham cedo ficam sem equipamentos</span>
+            </div>
+            <div class="pb-step">
+              <span class="pb-step-num">💰</span>
+              <span><strong>Financial close</strong> (BNDES, BID, IFC) é pré-condição para início de obras. Financiadores são mais exigentes que a ANEEL.</span>
+            </div>
+          </div>
+          <div class="pb-warn">Projeto com licenciamento inconsistente ou CUST pendente não fecha o financiamento. EPC fechado tarde atrasa entrega de equipamentos.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S-OPTESTE — OPERAÇÃO EM TESTE
+  ───────────────────────────────────────────────────── -->
+  <section id="s-opteste">
+    <div class="section-inner">
+      <p class="kicker reveal">A fase mais mal compreendida</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        Usina gerando energia<br>
+        <span class="em-copper">não é operação autorizada.</span>
+      </h2>
+      <p class="body-md reveal reveal-delay-2" style="margin-top:16px;max-width:700px;">
+        O empreendedor vê a usina gerando e pensa que o problema acabou. Regulatoriamente, ele ainda está na fase de implantação — com cronograma correndo e penalidades possíveis.
+      </p>
+
+      <div class="opteste-layout reveal reveal-delay-2">
+
+        <div>
+          <div class="opteste-trap">
+            <div class="ot-trap-title">⚠ A armadilha da operação em teste</div>
+            <div class="ot-trap-text">Durante o teste, a usina pode gerar e faturar no mercado spot. Para fins do <strong>CCEAR</strong> e da regulação da ANEEL, ela ainda está em implantação. Quando o prazo máximo vence sem o protocolo do requerimento de operação comercial, configura-se novo atraso regulatório — <strong>mesmo que a usina esteja gerando perfeitamente.</strong></div>
+          </div>
+
+          <div class="ot-sec-label">Prazo máximo de teste · Renováveis</div>
+          <div class="opteste-prazo">
+            <div class="op-prazo-val">~6 meses</div>
+            <div class="op-prazo-label">Prazo máximo estabelecido pela ANEEL para operação em teste.<br>Vencimento sem protocolo de operação comercial = novo atraso regulatório.</div>
+          </div>
+
+          <div class="ot-sec-label" style="margin-top:16px;">Dossiê de comissionamento obrigatório</div>
+          <div class="opteste-docs">
+            <div class="ot-doc"><div class="ot-doc-icon">📄</div><div class="ot-doc-text">Laudos de comissionamento por unidade geradora — emitidos pelo fabricante</div></div>
+            <div class="ot-doc"><div class="ot-doc-icon">📄</div><div class="ot-doc-text">Relatório de ensaios elétricos conforme especificações do ONS</div></div>
+            <div class="ot-doc"><div class="ot-doc-icon">📄</div><div class="ot-doc-text">Confirmação do agente de transmissão de que a conexão está energizada</div></div>
+            <div class="ot-doc"><div class="ot-doc-icon">📄</div><div class="ot-doc-text">Confirmação de vigência da Licença de Operação (LO)</div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="ot-sec-label">Como funciona a operação em teste</div>
+          <div class="opteste-steps">
+            <div class="ot-step">
+              <div>
+                <div class="ot-step-title">① Usina fisicamente pronta</div>
+                <div class="ot-step-text">Obra concluída, equipamentos instalados e comissionados. Pronta para ligar — mas ainda não pode operar comercialmente.</div>
+              </div>
+            </div>
+            <div class="ot-step">
+              <div>
+                <div class="ot-step-title">② Requerimento formal à ANEEL</div>
+                <div class="ot-step-text">A operação em teste <strong>não começa automaticamente</strong>. Exige protocolo com: confirmação da transmissora, laudos de comissionamento, sistemas de proteção conformes ao ONS e vigência da LI.</div>
+              </div>
+            </div>
+            <div class="ot-step">
+              <div>
+                <div class="ot-step-title">③ Período de teste ativo (~6 meses)</div>
+                <div class="ot-step-text">Usina opera e fatura no mercado spot — mas o CCEAR ainda não está sendo cumprido e o cronograma regulatório segue correndo.</div>
+              </div>
+            </div>
+            <div class="ot-step">
+              <div>
+                <div class="ot-step-title">④ Protocolo do requerimento de operação comercial</div>
+                <div class="ot-step-text">Deve ser protocolado dentro do prazo de teste. Qualquer documento faltando atrasa a Portaria da ANEEL — e enquanto ela não sai, a usina está tecnicamente em atraso mesmo gerando.</div>
+              </div>
+            </div>
+            <div class="ot-step">
+              <div>
+                <div class="ot-step-title">⑤ Portaria de Operação Comercial — ANEEL</div>
+                <div class="ot-step-text">Somente a partir deste ato a usina está em operação plena. O CCEAR começa a ser cumprido e as obrigações de implantação se encerram.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S6 — PENALIDADES
+  ───────────────────────────────────────────────────── -->
+  <section id="s6">
+    <div class="section-inner" style="text-align:center;">
+      <p class="kicker reveal" style="justify-content:center;">As consequências</p>
+      <h2 class="display-lg reveal reveal-delay-1">
+        Três camadas de penalidade.<br>
+        <span class="em-copper">Acumulam-se sobre o mesmo atraso.</span>
+      </h2>
+      <p class="body-md reveal reveal-delay-2" style="margin:16px auto 0;max-width:660px;">
+        Não são alternativas entre si — um único evento de atraso aciona as três simultaneamente, cada uma com base jurídica independente.
+      </p>
+
+      <div class="penalty-layers reveal reveal-delay-2">
+
+        <!-- Camada 1 — Editalícias -->
+        <div class="player player-1">
+          <div class="player-num">01</div>
+          <div class="player-cat">Camada Contratual</div>
+          <div class="player-title">Editalícias</div>
+          <div class="player-text">Nascem do edital do leilão e do contrato de concessão/autorização. São penalidades contratuais diretas — não dependem de processo administrativo adicional.</div>
+          <div class="player-highlight">Multa até 10% do valor do investimento · Execução imediata da fiança bancária sem ação judicial · Cassação da outorga</div>
+        </div>
+
+        <!-- Camada 2 — Administrativas -->
+        <div class="player player-2">
+          <div class="player-num">02</div>
+          <div class="player-cat">Camada Regulatória</div>
+          <div class="player-title">Administrativas</div>
+          <div class="player-text">Derivam do poder de polícia regulatório da ANEEL (Lei nº 9.427/1996). Aplicáveis por qualquer infração às normas do setor — sem exigir descumprimento contratual específico.</div>
+          <div class="player-highlight">Advertência · Auto de infração · Embargo de obras (cria ciclo vicioso de atraso) · Caducidade da concessão</div>
+        </div>
+
+        <!-- Camada 3 — Comerciais -->
+        <div class="player player-3">
+          <div class="player-num">03</div>
+          <div class="player-cat">Camada Comercial · As menos compreendidas</div>
+          <div class="player-title">Comerciais — CCEAR / PLD</div>
+          <div class="player-text">Quando a usina não opera na data contratada, o gerador é obrigado a cobrir o rombo do CCEAR comprando energia no mercado spot (CCEE) pelo PLD — o preço mais caro do sistema elétrico.</div>
+          <div class="player-highlight">Compra compulsória ao PLD mês a mês · Em cenários de escassez hídrica, pode superar todas as demais camadas somadas</div>
+        </div>
+
+      </div><!-- end penalty-layers -->
+
+      <div class="penalty-cumul reveal reveal-delay-3">
+        <strong>As três camadas se acumulam simultaneamente sobre o mesmo evento de atraso.</strong><br>
+        Para uma usina de R$ 400 milhões: multa editalícia pode chegar a R$ 40 mi + embargo administrativo + compra de energia ao PLD mês a mês. Não há teto combinado.
+      </div>
+
+      <div class="reveal reveal-delay-3">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.10em;color:rgba(255,255,255,0.30);margin-bottom:14px;text-align:center;">
+          Lógica de escalonamento — a ANEEL não aplica o máximo de imediato
+        </div>
+        <div class="escalonamento">
+          <div class="esc-step e1">Advertência</div>
+          <div class="esc-arrow">→</div>
+          <div class="esc-step e2">Multa</div>
+          <div class="esc-arrow">→</div>
+          <div class="esc-step e3">Embargo / Interdição</div>
+          <div class="esc-arrow">→</div>
+          <div class="esc-step e4">Cassação / Caducidade</div>
+          <div class="esc-note">Quem chega com uma advertência ainda está em posição de corrigir o rumo — a atuação preventiva começa aqui, antes de qualquer escalonamento.</div>
+        </div>
+      </div>
+
+      <div class="penalty-callout reveal reveal-delay-4" style="margin-top:28px;">
+        <span class="pc-icon">⚠</span>
+        <div>
+          <div class="pc-title">A penalidade é objetiva — não depende de culpa</div>
+          <div class="pc-text">Basta o atraso ou a omissão para que a infração esteja configurada. Boa-fé e desconhecimento da norma não elidem a penalidade. Nossa atuação é preventiva — antes que qualquer camada seja acionada.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S7 — CALCULADORA DE EXPOSIÇÃO
+  ───────────────────────────────────────────────────── -->
+  <section id="s7">
+    <div class="section-inner">
+      <p class="kicker reveal">CGH e PCH — o tamanho real do risco</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        Pequeno em MW,<br>
+        <span class="em-copper">grande em exposição.</span>
+      </h2>
+      <p class="body-md reveal reveal-delay-2" style="margin-top:16px;max-width:700px;">
+        Uma CGH de 5 MW pode ter R$ 57 milhões investidos — e até R$ 5,7 milhões em multas. Uma PCH de 30 MW pode ter R$ 240 milhões em capex — e R$ 24 milhões em penalidades acumuladas. Calcule a exposição do seu empreendimento.
+      </p>
+
+      <!-- CGH / PCH dimension cards -->
+      <div class="calc-types reveal reveal-delay-2">
+        <div class="calc-type-card" id="card-cgh">
+          <div class="ctc-badge">CGH</div>
+          <div class="ctc-full">Central Geradora Hidrelétrica</div>
+          <div class="ctc-range">Até <strong>5 MW</strong> instalado</div>
+          <div class="ctc-divider"></div>
+          <div class="ctc-row"><span class="ctc-label">Capex típico</span><span class="ctc-val">R$ 7–16 M/MW</span></div>
+          <div class="ctc-row"><span class="ctc-label">Para 5 MW (médio R$ 11,5 M/MW)</span><span class="ctc-val">~R$ 57,5 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">Multa máx. (10% capex)</span><span class="ctc-val ctc-val-red">R$ 5,75 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">Garantia editalícia (2% capex)</span><span class="ctc-val ctc-val-red">R$ 1,15 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">PLD/mês (atraso)</span><span class="ctc-val ctc-val-red">~R$ 317 mil</span></div>
+          <div class="ctc-note">Capac. factor hídrico 55% · PLD ref. R$ 160/MWh · Fonte: EPE PDE 2034 / ABRAPCH</div>
+        </div>
+        <div class="calc-type-card" id="card-pch">
+          <div class="ctc-badge ctc-badge-pch">PCH</div>
+          <div class="ctc-full">Pequena Central Hidrelétrica</div>
+          <div class="ctc-range"><strong>&gt;5 até 30 MW</strong> instalados</div>
+          <div class="ctc-divider"></div>
+          <div class="ctc-row"><span class="ctc-label">Capex típico</span><span class="ctc-val">R$ 5–11 M/MW</span></div>
+          <div class="ctc-row"><span class="ctc-label">Para 30 MW (médio R$ 8,0 M/MW)</span><span class="ctc-val">~R$ 240 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">Multa máx. (10% capex)</span><span class="ctc-val ctc-val-red">R$ 24 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">Garantia editalícia (2% capex)</span><span class="ctc-val ctc-val-red">R$ 4,8 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">PLD/mês (atraso)</span><span class="ctc-val ctc-val-red">~R$ 1,9 mi</span></div>
+          <div class="ctc-note">Capac. factor hídrico 55% · PLD ref. R$ 160/MWh · Fonte: EPE PDE 2034 / ABRAPCH</div>
+        </div>
+      </div>
+
+      <!-- Interactive calculator -->
+      <div class="calc-box reveal reveal-delay-3">
+        <div class="cb-title">Calculadora de Exposição</div>
+        <div class="cb-controls">
+          <div class="cb-type-toggle">
+            <button class="cbt active" data-type="cgh" id="btn-cgh">CGH</button>
+            <button class="cbt" data-type="pch" id="btn-pch">PCH</button>
+          </div>
+          <div class="cb-inputs">
+            <div class="cb-field">
+              <label class="cb-label" id="lbl-mw">Potência instalada (MW) — até 5 MW</label>
+              <input type="range" id="inp-mw" min="0.5" max="5" step="0.5" value="2.5" class="cb-slider">
+              <div class="cb-slider-val"><span id="val-mw">0,5</span> MW</div>
+            </div>
+            <div class="cb-field">
+              <label class="cb-label">Meses de atraso no cronograma</label>
+              <input type="range" id="inp-months" min="1" max="24" step="1" value="6" class="cb-slider">
+              <div class="cb-slider-val"><span id="val-months">6</span> meses</div>
+            </div>
+          </div>
+        </div>
+        <div class="cb-results">
+          <div class="cb-result-item">
+            <div class="cbr-label">💰 Capex estimado</div>
+            <div class="cbr-val" id="res-capex">R$ 28,8 mi</div>
+          </div>
+          <div class="cb-result-item cbr-risk">
+            <div class="cbr-label">⚖ Multa adm. máx. <span class="cbr-perc">(10% do capex)</span></div>
+            <div class="cbr-val" id="res-multa">R$ 2,9 mi</div>
+          </div>
+          <div class="cb-result-item cbr-risk">
+            <div class="cbr-label">🔐 Execução de garantia <span class="cbr-perc">(2% do capex)</span></div>
+            <div class="cbr-val" id="res-garantia">R$ 576 mil</div>
+          </div>
+          <div class="cb-result-item cbr-risk">
+            <div class="cbr-label">⚡ Exposição PLD <span class="cbr-perc">(MW × 720h × 55% × R$160/MWh × meses)</span></div>
+            <div class="cbr-val" id="res-pld">R$ 950 mil</div>
+          </div>
+          <div class="cb-result-total">
+            <div class="cbr-label">Exposição total estimada</div>
+            <div class="cbr-total" id="res-total">R$ 4,5 mi</div>
+          </div>
+        </div>
+        <div class="cb-disclaimer">Estimativa ilustrativa baseada no Módulo 1 — O Mercado. Capex médio CGH: R$ 11,5 M/MW (faixa R$ 7–16 M/MW) · PCH: R$ 8,0 M/MW (faixa R$ 5–11 M/MW) · PLD ref.: R$ 160/MWh · Fator de capacidade hídrico: 55% · Garantia: 2% do capex · Multa: até 10% do investimento (art. 3º, Res. Norm. ANEEL). Fontes: EPE — Caderno de Custos PDE 2034 (set. 2024) · ABRAPCH. Valores reais dependem de laudo técnico.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S8 — EXCLUDENTE DE RESPONSABILIDADE
+  ───────────────────────────────────────────────────── -->
+  <section id="s8">
+    <div class="section-inner">
+      <p class="kicker reveal">O serviço de maior valor agregado</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        O instituto que pode<br>
+        <span class="em-copper">suspender toda a penalidade.</span>
+      </h2>
+      <p class="body-md reveal reveal-delay-2" style="margin-top:16px;max-width:700px;">
+        O excludente de responsabilidade é o mecanismo regulatório que, quando bem construído, suspende multas, embargos, execução de garantia e recomposição de lastro — desde que o atraso decorra de causa externa e irresistível.
+      </p>
+
+      <div class="excl-layout reveal reveal-delay-2">
+        <div class="excl-causes">
+          <div class="excl-col-title">Causas reconhecidas pela ANEEL</div>
+          <div class="excl-cause-grid">
+            <div class="excl-cause">
+              <div class="ec-icon">🌧</div>
+              <div class="ec-title">Causas climáticas extremas</div>
+              <div class="ec-text">Eventos meteorológicos atípicos comprovados por laudos do INMET — seca extrema, enchentes, chuvas muito acima da média com impacto direto e documentado na obra.</div>
+            </div>
+            <div class="excl-cause">
+              <div class="ec-icon">🏛</div>
+              <div class="ec-title">Atos do Poder Público</div>
+              <div class="ec-text">A causa mais frequente na prática. Demora do IBAMA ou órgãos estaduais/municipais em emitir licenças ambientais, embargos, decisões judiciais, desapropriações lentas.</div>
+            </div>
+            <div class="excl-cause">
+              <div class="ec-icon">🚨</div>
+              <div class="ec-title">Situações de emergência</div>
+              <div class="ec-text">Pandemias, epidemias regionais, desastres naturais, crises na cadeia de suprimentos — exigem comprovação documental robusta do nexo causal.</div>
+            </div>
+            <div class="excl-cause">
+              <div class="ec-icon">🌐</div>
+              <div class="ec-title">Outros motivos reconhecidos</div>
+              <div class="ec-text">Greve de transportadores, eventos geopolíticos com impacto comprovável no projeto específico. A ANEEL exige demonstração rigorosa do nexo causal.</div>
+            </div>
+          </div>
+        </div>
+        <div class="excl-effects">
+          <div class="excl-col-title">O que o excludente suspende</div>
+          <ul class="excl-list">
+            <li>Isenção de penalidade administrativa (multa, embargo)</li>
+            <li>Isenção de penalidade editalícia (multa contratual, execução de garantia)</li>
+            <li>Isenção de recomposição de lastro de energia</li>
+            <li>Postergação formal do cronograma e do prazo da outorga</li>
+          </ul>
+          <div class="excl-flow-title">Como construímos o requerimento</div>
+          <div class="excl-steps">
+            <div class="excl-step"><span class="es-num">1</span><span class="es-text">Identificação do evento e do nexo de causalidade</span></div>
+            <div class="excl-step"><span class="es-num">2</span><span class="es-text">Coleta de documentação comprobatória (laudos, ofícios, protocolos)</span></div>
+            <div class="excl-step"><span class="es-num">3</span><span class="es-text">Construção da peça técnica central com o nexo causal dia a dia</span></div>
+            <div class="excl-step"><span class="es-num">4</span><span class="es-text">Protocolo tempestivo na ANEEL — SFG + SCG</span></div>
+            <div class="excl-step"><span class="es-num">5</span><span class="es-text">Recurso à Diretoria se necessário</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S9 — RESPONSABILIDADE DO TITULAR
+  ───────────────────────────────────────────────────── -->
+  <section id="s9">
+    <div class="section-inner">
+      <p class="kicker reveal">Obrigações do outorgado</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        Ser titular de uma outorga<br>
+        <span class="em-copper">é uma responsabilidade permanente.</span>
+      </h2>
+      <p class="body-md reveal reveal-delay-2" style="margin-top:16px;max-width:700px;">
+        A outorga não é apenas um direito — é um conjunto de deveres que se estende por toda a vida do empreendimento. O titular responde perante a ANEEL, o meio ambiente e terceiros afetados pela obra e pela operação.
+      </p>
+
+      <div class="resp-grid reveal reveal-delay-2">
+        <div class="resp-card">
+          <div class="rc-icon">📋</div>
+          <div class="rc-title">Obrigações Declaratórias</div>
+          <ul class="rc-list">
+            <li>Declaração mensal de avanço de obras (RAPEEL) — prazo: dia 15</li>
+            <li>Relatórios mensais de geração para o ONS e ANEEL</li>
+            <li>Notificação de eventos de força maior em até 60 dias</li>
+            <li>Atualização cadastral no SIGA a cada alteração de projeto</li>
+            <li>Prestação de informações em processos administrativos da ANEEL</li>
+          </ul>
+        </div>
+        <div class="resp-card">
+          <div class="rc-icon">🌱</div>
+          <div class="rc-title">Obrigações Ambientais</div>
+          <ul class="rc-list">
+            <li>Manter Licença de Instalação (LI) válida durante toda a fase de obras</li>
+            <li>Obter Licença de Operação (LO) antes do início da operação comercial</li>
+            <li>Cumprir condicionantes ambientais estabelecidas no licenciamento</li>
+            <li>Responder por danos ambientais decorrentes da obra ou operação</li>
+          </ul>
+        </div>
+        <div class="resp-card">
+          <div class="rc-icon">🤝</div>
+          <div class="rc-title">Responsabilidade perante Terceiros</div>
+          <ul class="rc-list">
+            <li>Indenizar proprietários e comunidades afetadas pela implantação</li>
+            <li>Cumprir obrigações de compensação ambiental e social do EIA</li>
+            <li>Responder por danos à rede elétrica causados pelo empreendimento</li>
+            <li>Manutenção de seguros obrigatórios previstos no ato de outorga</li>
+          </ul>
+        </div>
+        <div class="resp-card resp-card-highlight">
+          <div class="rc-icon">⚠</div>
+          <div class="rc-title">Em caso de M&amp;A ou cessão</div>
+          <ul class="rc-list">
+            <li>A transferência de outorga exige aprovação prévia da ANEEL</li>
+            <li>O adquirente herda todas as pendências e passivos regulatórios</li>
+            <li>Due diligence regulatória é essencial antes de qualquer transação</li>
+            <li>Ausência de due diligence é o principal vetor de risco em M&amp;A de projetos</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S10 — 3 PILARES
+  ───────────────────────────────────────────────────── -->
+  <section id="s10">
+    <div class="section-inner">
+      <p class="kicker reveal">Como atuamos</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        Três frentes de trabalho.<br>
+        <span class="em-copper">Uma visão integrada.</span>
+      </h2>
+
+      <div class="pillars-grid">
+        <div class="pillar reveal reveal-delay-1">
+          <div class="pillar-num">01</div>
+          <div class="pillar-cat">Jurídico-regulatório</div>
+          <div class="pillar-title">Apoio regulatório</div>
+          <ul class="pillar-items">
+            <li>Representação judicial e administrativa</li>
+            <li>Consultoria de conformidade</li>
+            <li>Atuação junto à ANEEL</li>
+            <li>Defesa em penalidades</li>
+            <li>Excludente de responsabilidade</li>
+          </ul>
+        </div>
+        <div class="pillar reveal reveal-delay-2">
+          <div class="pillar-num">02</div>
+          <div class="pillar-cat">Técnico-operacional</div>
+          <div class="pillar-title">Gestão de conformidade</div>
+          <ul class="pillar-items">
+            <li>Emissão e transferência de outorgas</li>
+            <li>Relatórios mensais RAPEEL</li>
+            <li>Alteração de cronograma</li>
+            <li>Liberação para operação comercial</li>
+          </ul>
+        </div>
+        <div class="pillar reveal reveal-delay-3">
+          <div class="pillar-num">03</div>
+          <div class="pillar-cat">Estratégico-financeiro</div>
+          <div class="pillar-title">Assessoria estratégica</div>
+          <ul class="pillar-items">
+            <li>Apoio a financiadores</li>
+            <li>Incentivos fiscais SUDENE/SUDAM</li>
+            <li>Benefícios regulatórios</li>
+            <li>Due diligence em M&amp;A de projetos</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S11 — RALIE
+  ───────────────────────────────────────────────────── -->
+  <section id="s11">
+    <div class="section-inner">
+      <p class="kicker reveal">Inteligência comercial</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        Identificamos quem precisa de nós<br>
+        <span class="em-copper">antes que saibam disso.</span>
+      </h2>
+
+      <div class="ralie-layout">
+        <div class="ralie-steps reveal reveal-delay-2">
+          <div class="rstep">
+            <div>
+              <div class="rstep-title">Portal RALIE · ANEEL</div>
+              <div class="rstep-text">O Relatório de Acompanhamento da Expansão da Oferta de Geração é publicado mensalmente pela ANEEL. Contém todos os empreendimentos em implantação no Brasil — situação de obra, cronograma, viabilidade, licenças e conexão.</div>
+            </div>
+          </div>
+          <div class="rstep">
+            <div>
+              <div class="rstep-title">Filtros de qualificação</div>
+              <div class="rstep-text">Cruzamos situação da obra (Paralisada), viabilidade (Baixa) e cronograma (Atrasado) para identificar empreendimentos com risco regulatório ativo ou iminente — nosso público-alvo prioritário.</div>
+            </div>
+          </div>
+          <div class="rstep">
+            <div>
+              <div class="rstep-title">Abordagem personalizada</div>
+              <div class="rstep-text">"Identificamos no RALIE que seu empreendimento <em>X</em> está com situação <em>Y</em> — exposição estimada de R$ <em>Z</em>. Atuamos preventivamente nessa fase." O cliente percebe que já conhecemos o projeto antes do primeiro contato.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live panel mockup -->
+        <div class="ralie-panel-preview reveal reveal-delay-3">
+          <div class="rp-header">Painel de Leads — RALIE ao vivo</div>
+
+          <div class="rp-row">
+            <div class="rp-score hot">87</div>
+            <div class="rp-info">
+              <div class="rp-name">PCH Rio Claro I</div>
+              <div class="rp-meta">MG · 12 MW · Paralisada · LI Vencida</div>
+            </div>
+            <div class="rp-badge hot">QUENTE</div>
+          </div>
+          <div class="rp-row">
+            <div class="rp-score hot">79</div>
+            <div class="rp-info">
+              <div class="rp-name">UFV Chapada IV</div>
+              <div class="rp-meta">BA · 48 MW · Cronograma atrasado</div>
+            </div>
+            <div class="rp-badge hot">QUENTE</div>
+          </div>
+          <div class="rp-row">
+            <div class="rp-score warm">58</div>
+            <div class="rp-info">
+              <div class="rp-name">EOL Serra Grande</div>
+              <div class="rp-meta">CE · 30 MW · CUST pendente</div>
+            </div>
+            <div class="rp-badge warm">MORNO</div>
+          </div>
+          <div class="rp-row">
+            <div class="rp-score warm">52</div>
+            <div class="rp-info">
+              <div class="rp-name">PCH Vertentes II</div>
+              <div class="rp-meta">MG · 8 MW · LO Prevista vencida</div>
+            </div>
+            <div class="rp-badge warm">MORNO</div>
+          </div>
+          <div class="rp-row">
+            <div class="rp-score cold">31</div>
+            <div class="rp-info">
+              <div class="rp-name">UFV Cerrado Norte</div>
+              <div class="rp-meta">GO · 22 MW · Em andamento</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.22);padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);">
+            Score proprietário baseado em situação, viabilidade, cronograma e licenças · Dados públicos ANEEL
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S12 — LEI 15.269/2025
+  ───────────────────────────────────────────────────── -->
+  <section id="s12">
+    <div class="section-inner">
+      <p class="kicker reveal">Marco regulatório 2025</p>
+      <h2 class="display-md reveal reveal-delay-1">
+        Lei 15.269/2025.<br>
+        <span class="em-copper">A maior reforma do setor elétrico das últimas décadas.</span>
+      </h2>
+
+      <div class="lei-grid reveal reveal-delay-2">
+        <div class="lei-card">
+          <div class="lei-year">2027</div>
+          <div>
+            <div class="lei-card-title">Mercado livre para industriais</div>
+            <div class="lei-card-text">Consumidores industriais e comerciais de baixa tensão poderão escolher seu fornecedor de energia — encerrando décadas de monopólio das distribuidoras nesse segmento.</div>
+          </div>
+        </div>
+        <div class="lei-card">
+          <div class="lei-year">2028</div>
+          <div>
+            <div class="lei-card-title">Abertura para residenciais</div>
+            <div class="lei-card-text">Consumidores residenciais e rurais também poderão migrar para o mercado livre — abertura total do mercado de energia elétrica no Brasil.</div>
+          </div>
+        </div>
+        <div class="lei-card">
+          <div class="lei-year">2026</div>
+          <div>
+            <div class="lei-card-title">Fim dos descontos TUST/TUSD</div>
+            <div class="lei-card-text">Encerramento dos descontos nas tarifas de uso do sistema de transmissão e distribuição para novos contratos de migração ao mercado livre a partir de 2026.</div>
+          </div>
+        </div>
+        <div class="lei-card">
+          <div class="lei-year">SUI</div>
+          <div>
+            <div class="lei-card-title">Supridor de Última Instância</div>
+            <div class="lei-card-text">Criação do conceito de Supridor de Última Instância para garantir fornecimento de energia a consumidores que não consigam contratar no mercado livre.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lei-highlight reveal reveal-delay-3">
+        <div class="lei-hl-icon">⚡</div>
+        <div class="lei-hl-text">
+          Cada etapa dessa reforma <strong>gera novas obrigações regulatórias para os geradores</strong> — e amplia diretamente a demanda por assessoria especializada em autorização, conformidade e conexão ao sistema.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────
+       S13 — CTA
+  ───────────────────────────────────────────────────── -->
+  <section id="s13">
+    <div class="section-inner" style="text-align:center;">
+      <p class="kicker reveal" style="justify-content:center;">Fale com a gente</p>
+      <h2 class="display-lg reveal reveal-delay-1">
+        O seu empreendimento<br>
+        está em conformidade?
+      </h2>
+      <div class="cta-divider reveal reveal-delay-2"></div>
+      <p class="body-lg reveal reveal-delay-2" style="margin:0 auto;text-align:center;">
+        Uma análise regulatória preventiva pode evitar multas, atrasos e a perda da outorga. Trabalhamos ao lado de empreendedores que precisam de clareza regulatória para operar com segurança.
+      </p>
+      <div class="cta-firms reveal reveal-delay-3">
+        <strong>Edson Araújo Advogados</strong>
+        <span class="sep">·</span>
+        <strong>Thiago Fernandes Advogado</strong>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Edson Araújo Advogados · Thiago Fernandes Advogado — Assessoria regulatória em geração de energia elétrica · 2026
+  </footer>
+
+  <!-- ─────────────────────────────────────────────────────
+       JAVASCRIPT
+  ───────────────────────────────────────────────────── -->
+  <script>
+    // ── Progress bar ────────────────────────────────────
+    const bar = document.getElementById('progress-bar');
+    window.addEventListener('scroll', () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (window.scrollY / max * 100) + '%';
+    }, { passive: true });
+
+    // ── IntersectionObserver — reveal ───────────────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── Nav dots — active state ──────────────────────────
+    const sections = document.querySelectorAll('section[id]');
+    const dots = document.querySelectorAll('.nav-dot');
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting && e.intersectionRatio >= 0.4) {
+          const id = e.target.id;
+          dots.forEach(d => {
+            d.classList.toggle('active', d.dataset.target === id);
+          });
+        }
+      });
+    }, { threshold: 0.4 });
+
+    sections.forEach(s => sectionObserver.observe(s));
+
+    // ── Dot click scroll ────────────────────────────────
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const target = document.getElementById(dot.dataset.target);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // ── Keyboard navigation (arrow keys) ────────────────
+    const sectionIds = Array.from(sections).map(s => s.id);
+    let currentIdx = 0;
+
+    window.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+        e.preventDefault();
+        currentIdx = Math.min(currentIdx + 1, sectionIds.length - 1);
+        document.getElementById(sectionIds[currentIdx]).scrollIntoView({ behavior: 'smooth' });
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault();
+        currentIdx = Math.max(currentIdx - 1, 0);
+        document.getElementById(sectionIds[currentIdx]).scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    // Track current section via scroll
+    window.addEventListener('scroll', () => {
+      let idx = 0;
+      sections.forEach((s, i) => {
+        if (s.getBoundingClientRect().top <= window.innerHeight * 0.5) idx = i;
+      });
+      currentIdx = idx;
+    }, { passive: true });
+
+    // ── Phase Drawer ─────────────────────────────────────
+    const PHASE_DATA = {
+      leilao: {
+        kicker: 'Fase 1 de 5',
+        title: 'Leilão / Outorga',
+        desc: 'O ato jurídico que dá origem à relação regulatória. Ganhar o leilão é apenas o início — a outorga cria obrigações imediatas que se estendem por toda a vida do projeto.',
+        obrigacoes: [
+          'Assinar o contrato de concessão ou ato de autorização dentro do prazo',
+          'Apresentar garantias financeiras exigidas pelo edital',
+          'Registrar o empreendimento no SIGA/ANEEL',
+          'Iniciar obras dentro do prazo contratual estabelecido'
+        ],
+        riscos: [
+          'Caducidade por não assinatura do contrato no prazo',
+          'Perda de garantia por descumprimento de condição precedente',
+          'Infração por não início de obras no prazo contratual'
+        ]
+      },
+      preobra: {
+        kicker: 'Fase 2 de 5',
+        title: 'Pré-obra · Licenças e Projetos',
+        desc: 'A fase mais subestimada do ciclo. O prazo contratual corre desde a outorga — e a demora ambiental ou de conexão não suspende automaticamente as obrigações. Um erro aqui contamina todas as fases seguintes.',
+        obrigacoes: [
+          'Declarar mensalmente no RAPEEL (dia 15) desde o primeiro mês — mesmo antes de qualquer obra',
+          'Obter LP → LI → LO sequencialmente junto ao órgão ambiental competente (IBAMA, SEMA estadual ou municipal)',
+          'Solicitar ao ONS o Relatório de Viabilidade de Acesso e assinar CUST (transmissão) ou CUSD (distribuição)',
+          'Fechar contratos de EPC e reservar equipamentos com antecedência (lead time 12–18 meses)',
+          'Atingir financial close (BNDES, BID, IFC) como pré-condição para início de obras',
+          'Protocolar excludente de responsabilidade se houver atraso causado pelo órgão ambiental'
+        ],
+        riscos: [
+          'Omissão no RAPEEL na pré-obra = infração automática (desconhecida pela maioria)',
+          'CUST/CUSD não assinado a tempo: usina construída não pode ligar na rede',
+          'Atraso ambiental sem excludente protocolado = penalidade sem suspensão',
+          'Lead time de equipamentos não planejado atrasa entrega na fase de obras',
+          'Licenciamento inconsistente impede o financial close — projeto não sai do papel'
+        ]
+      },
+      obras: {
+        kicker: 'Fase 3 de 5 · ★ Foco da nossa atuação',
+        title: 'Obras / Implantação',
+        desc: 'A fase de maior volume de obrigações e onde mais ocorrem infrações. A ANEEL fiscaliza via SFG (Superintendência de Fiscalização dos Serviços de Geração) de duas formas: monitoramento automático mensal cruzando dados do RAPEEL, e vistoria de campo — que pode ocorrer a qualquer momento por inconsistência detectada.',
+        obrigacoes: [
+          'Declarar mensalmente o avanço físico das obras no RAPEEL até o dia 15',
+          'Manter cronograma atualizado e notificar a ANEEL de alterações relevantes',
+          'Notificar eventos de força maior em até 60 dias do início do evento',
+          'Manter a Licença de Instalação (LI) válida durante toda a fase de obras',
+          'Atualizar dados cadastrais no SIGA quando houver alteração de projeto'
+        ],
+        riscos: [
+          'Atraso na entrega de aerogeradores/módulos fotovoltaicos (Europa/China): 3 a 12 meses, sem instrumento contratual de pressão se o EPC for mal estruturado',
+          'Construtora com EPC mal estruturado: inadimplência ou falência paralisa fisicamente a obra',
+          'Linha de conexão da transmissora não pronta: usina 100% construída mas não pode ligar',
+          'Embargo de IBAMA/IPHAN por espécies protegidas ou sítios arqueológicos não mapeados',
+          'Infração automática por omissão no RAPEEL — a SFG detecta via monitoramento a distância'
+        ]
+      },
+      operacao: {
+        kicker: 'Fase 4 de 5 · ★ Foco da nossa atuação',
+        title: 'Operação · Teste → Comercial',
+        desc: 'Fase frequentemente negligenciada. A usina pode estar gerando energia enquanto o empreendimento está tecnicamente em infração por ausência de autorização formal para operação comercial.',
+        obrigacoes: [
+          'Solicitar autorização formal da ANEEL para início dos testes de operação',
+          'Submeter laudos de comissionamento e testes de capacidade',
+          'Obter Licença de Operação (LO) do órgão ambiental antes da operação comercial',
+          'Comunicar formalmente o início da operação comercial à ANEEL'
+        ],
+        riscos: [
+          'Operação comercial sem portaria da ANEEL = infração grave',
+          'Divergência entre potência autorizada e potência medida gera autuação',
+          'LO vencida durante operação configura descontinuidade de conformidade'
+        ]
+      },
+      operacao_plena: {
+        kicker: 'Fase 5 de 5',
+        title: 'Operação Plena',
+        desc: 'Com a portaria de autorização vigente, as obrigações não cessam — entram em modo de manutenção contínua. Conformidade operacional exige monitoramento permanente.',
+        obrigacoes: [
+          'Manter a portaria de autorização da ANEEL vigente e atualizada',
+          'Submeter relatórios mensais de geração ao ONS e à ANEEL',
+          'Manter seguros e garantias obrigatórios previstos no ato de outorga',
+          'Reportar manutenções programadas que reduzam capacidade instalada'
+        ],
+        riscos: [
+          'Perda de certificado de medição por não conformidade técnica',
+          'Divergência no MRE por geração não declarada corretamente',
+          'Descontinuidade de conformidade por vencimento de licenças de operação'
+        ]
+      }
+    };
+
+    function openPhaseDrawer(phaseKey) {
+      const d = PHASE_DATA[phaseKey];
+      if (!d) return;
+      document.getElementById('pd-kicker').textContent = d.kicker;
+      document.getElementById('pd-title').textContent = d.title;
+      document.getElementById('pd-body').innerHTML = `
+        <p class="pd-desc">${d.desc}</p>
+        <div>
+          <div class="pd-col-title">Obrigações principais</div>
+          <ul class="pd-list">
+            ${d.obrigacoes.map(o => `<li>${o}</li>`).join('')}
+          </ul>
+        </div>
+        <div>
+          <div class="pd-col-title">Riscos se descumpridas</div>
+          <ul class="pd-list risks">
+            ${d.riscos.map(r => `<li>${r}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+      document.getElementById('phase-modal').classList.add('open');
+      document.getElementById('phase-overlay').classList.add('open');
+    }
+
+    function closePhaseDrawer() {
+      document.getElementById('phase-modal').classList.remove('open');
+      document.getElementById('phase-overlay').classList.remove('open');
+    }
+
+    document.getElementById('pd-close').addEventListener('click', closePhaseDrawer);
+    document.getElementById('phase-overlay').addEventListener('click', closePhaseDrawer);
+    window.addEventListener('keydown', e => { if (e.key === 'Escape') closePhaseDrawer(); });
+
+    document.querySelectorAll('.cphase[data-phase]').forEach(card => {
+      card.addEventListener('click', () => openPhaseDrawer(card.dataset.phase));
+    });
+    // ── Calculadora de Exposição ─────────────────────────
+    (function() {
+      const CAPEX = { cgh: 11.5, pch: 8.0 }; // R$ M/MW — médio EPE PDE 2034 / ABRAPCH
+      const PLD_REF = 160; // R$/MWh
+      const CF = 0.55;     // capacity factor hidro
+      const HORAS_MES = 720;
+      const MULTA_PERC = 0.10;
+      const GARANTIA_PERC = 0.02;
+
+      let tipo = 'cgh';
+      const inpMw     = document.getElementById('inp-mw');
+      const inpMonths = document.getElementById('inp-months');
+      const valMw     = document.getElementById('val-mw');
+      const valMonths = document.getElementById('val-months');
+      const lblMw     = document.getElementById('lbl-mw');
+
+      function fmt(val) {
+        if (val >= 1000000) return 'R$ ' + (val/1000000).toFixed(1).replace('.',',') + ' mi';
+        if (val >= 1000)    return 'R$ ' + Math.round(val/1000) + ' mil';
+        return 'R$ ' + Math.round(val);
+      }
+
+      function calc() {
+        const mw = parseFloat(inpMw.value);
+        const meses = parseInt(inpMonths.value);
+        valMw.textContent = mw.toFixed(1).replace('.',',');
+        valMonths.textContent = meses;
+
+        const capex = mw * CAPEX[tipo] * 1e6;
+        const multa = capex * MULTA_PERC;
+        const garantia = capex * GARANTIA_PERC;
+        const mwhMes = mw * HORAS_MES * CF;
+        const pldTotal = mwhMes * PLD_REF * meses;
+        const total = multa + garantia + pldTotal;
+
+        document.getElementById('res-capex').textContent   = fmt(capex);
+        document.getElementById('res-multa').textContent   = fmt(multa);
+        document.getElementById('res-garantia').textContent = fmt(garantia);
+        document.getElementById('res-pld').textContent     = fmt(pldTotal);
+        document.getElementById('res-total').textContent   = fmt(total);
+      }
+
+      function setType(t) {
+        tipo = t;
+        const maxMw  = t === 'cgh' ? 5 : 30;
+        const minMw  = t === 'cgh' ? 0.5 : 5;
+        const stepMw = t === 'cgh' ? 0.5 : 1;
+        inpMw.max  = maxMw;
+        inpMw.min  = minMw;
+        inpMw.step = stepMw;
+        inpMw.value = t === 'cgh' ? 2.5 : 15;
+        lblMw.textContent = 'Potência instalada (MW) — ' + (t === 'cgh' ? 'até 5 MW' : '> 5 até 30 MW');
+        document.getElementById('btn-cgh').classList.toggle('active', t === 'cgh');
+        document.getElementById('btn-pch').classList.toggle('active', t === 'pch');
+        calc();
+      }
+
+      document.getElementById('btn-cgh').addEventListener('click', () => setType('cgh'));
+      document.getElementById('btn-pch').addEventListener('click', () => setType('pch'));
+      inpMw.addEventListener('input', calc);
+      inpMonths.addEventListener('input', calc);
+      calc(); // initial render
+    })();
+  </script>
+
+</body>
+</html>
