@@ -1,33 +1,6 @@
 /* global React, UI */
 const { useState, useEffect } = React;
-const { Icon, ckanSQL } = window.UI;
-
-// ── Market stats via ANEEL CKAN ──
-const RALIE_RES_ID = "4a615df8-4c25-48fa-bbea-873a36a79518";
-
-// CAPEX médio ponderado para renováveis no Brasil (R$ milhões/MW instalado, ref. 2025)
-// Solar utility-scale: ~R$ 4,5M/MW · Eólica: ~R$ 7,0M/MW · PCH: ~R$ 6,0M/MW → média ~R$ 5,5M/MW
-const CAPEX_POR_MW = 5.5; // R$ milhões
-
-// Referência hardcoded do painel "Tendência de Expansão" RALIE/ANEEL (Abr/2026)
-// Usado como fallback se o endpoint SQL não estiver disponível
-const RALIE_REF = { usinas: 2742, mw: 118839, data: "Abr/2026" };
-
-function fmtBilhoes(bilhoes) {
-  return bilhoes >= 100
-    ? bilhoes.toLocaleString("pt-BR", { maximumFractionDigits: 0 })
-    : bilhoes.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-}
-
-function fmtData(s) {
-  if (!s) return "—";
-  const d = String(s).slice(0, 10);
-  if (/^\d{4}-\d{2}-\d{2}/.test(d)) {
-    const [y, m, dd] = d.split("-");
-    return `${dd}/${m}/${y}`;
-  }
-  return d;
-}
+const { Icon } = window.UI;
 
 /* ── Ciclo de vida ── */
 const CYCLE_PHASES = [
@@ -114,49 +87,149 @@ const RALIE_BOXES = [
   }
 ];
 
+function EnergyFlowDiagram() {
+  return (
+    <div className="esis-wrap">
+      <div className="esis-header">
+        <span className="esis-kicker">Sistema Elétrico Nacional — fluxo da energia</span>
+      </div>
+
+      <div className="esis-flow">
+        {/* ── NODE 1: GERAÇÃO ── */}
+        <div className="esis-node esis-node-gen">
+          <div className="esis-node-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Sun */}
+              <circle cx="20" cy="24" r="8" fill="rgba(217,119,87,0.85)"/>
+              {[0,45,90,135,180,225,270,315].map(a => {
+                const r = a * Math.PI / 180;
+                return <line key={a} x1={20 + 11*Math.cos(r)} y1={24 + 11*Math.sin(r)}
+                              x2={20 + 15*Math.cos(r)} y2={24 + 15*Math.sin(r)}
+                              stroke="rgba(217,119,87,0.9)" strokeWidth="2" strokeLinecap="round"/>;
+              })}
+              {/* Wind turbine */}
+              <line x1="46" y1="42" x2="46" y2="58" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5"/>
+              <circle cx="46" cy="37" r="2" fill="rgba(255,255,255,0.6)"/>
+              <line x1="46" y1="37" x2="37" y2="31" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5"/>
+              <line x1="46" y1="37" x2="55" y2="31" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5"/>
+              <line x1="46" y1="37" x2="46" y2="28" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5"/>
+              {/* Hydro drop */}
+              <path d="M 8 52 C 8 46 16 44 16 52 C 16 56 12 58 12 58 C 12 58 8 56 8 52 Z" fill="rgba(100,180,255,0.65)"/>
+            </svg>
+          </div>
+          <div className="esis-node-label">GERAÇÃO</div>
+          <div className="esis-node-sub">Solar · Eólica · Hídrica</div>
+          <div className="esis-node-badge">★ Nossa atuação</div>
+        </div>
+
+        {/* ── CABLE 1 ── */}
+        <div className="esis-cable">
+          <div className="esis-cable-label">Alta tensão</div>
+          <div className="esis-cable-track">
+            <span className="esis-particle esis-pc-copper" style={{animationDelay:"0s"}}/>
+            <span className="esis-particle esis-pc-copper" style={{animationDelay:"0.5s"}}/>
+            <span className="esis-particle esis-pc-copper" style={{animationDelay:"1.0s"}}/>
+          </div>
+        </div>
+
+        {/* ── NODE 2: TRANSMISSÃO ── */}
+        <div className="esis-node esis-node-trans">
+          <div className="esis-node-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="32" y1="6" x2="20" y2="52" stroke="rgba(255,255,255,0.55)" strokeWidth="2"/>
+              <line x1="32" y1="6" x2="44" y2="52" stroke="rgba(255,255,255,0.55)" strokeWidth="2"/>
+              <line x1="24" y1="24" x2="40" y2="24" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+              <line x1="22" y1="38" x2="42" y2="38" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+              <path d="M 6 20 Q 32 26 58 20" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.2"/>
+              <path d="M 6 25 Q 32 31 58 25" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1.2"/>
+            </svg>
+          </div>
+          <div className="esis-node-label">TRANSMISSÃO</div>
+          <div className="esis-node-sub">345–765 kV · Torres</div>
+        </div>
+
+        {/* ── CABLE 2 ── */}
+        <div className="esis-cable">
+          <div className="esis-cable-label">Média tensão</div>
+          <div className="esis-cable-track">
+            <span className="esis-particle esis-pc-blue" style={{animationDelay:"0.2s"}}/>
+            <span className="esis-particle esis-pc-blue" style={{animationDelay:"0.7s"}}/>
+            <span className="esis-particle esis-pc-blue" style={{animationDelay:"1.2s"}}/>
+          </div>
+        </div>
+
+        {/* ── NODE 3: DISTRIBUIÇÃO ── */}
+        <div className="esis-node esis-node-dist">
+          <div className="esis-node-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="32" y1="8" x2="32" y2="30" stroke="rgba(100,180,255,0.65)" strokeWidth="2"/>
+              <line x1="32" y1="20" x2="16" y2="36" stroke="rgba(100,180,255,0.55)" strokeWidth="1.5"/>
+              <line x1="32" y1="20" x2="48" y2="36" stroke="rgba(100,180,255,0.55)" strokeWidth="1.5"/>
+              <line x1="16" y1="36" x2="8"  y2="52" stroke="rgba(100,180,255,0.45)" strokeWidth="1.2"/>
+              <line x1="16" y1="36" x2="24" y2="52" stroke="rgba(100,180,255,0.45)" strokeWidth="1.2"/>
+              <line x1="48" y1="36" x2="40" y2="52" stroke="rgba(100,180,255,0.45)" strokeWidth="1.2"/>
+              <line x1="48" y1="36" x2="56" y2="52" stroke="rgba(100,180,255,0.45)" strokeWidth="1.2"/>
+              <rect x="5"  y="52" width="7" height="7" rx="1" fill="rgba(100,180,255,0.28)"/>
+              <rect x="21" y="52" width="7" height="7" rx="1" fill="rgba(100,180,255,0.28)"/>
+              <rect x="37" y="52" width="7" height="7" rx="1" fill="rgba(100,180,255,0.28)"/>
+              <rect x="53" y="52" width="7" height="7" rx="1" fill="rgba(100,180,255,0.28)"/>
+            </svg>
+          </div>
+          <div className="esis-node-label">DISTRIBUIÇÃO</div>
+          <div className="esis-node-sub">13,8 kV · Redes locais</div>
+        </div>
+
+        {/* ── CABLE 3 ── */}
+        <div className="esis-cable">
+          <div className="esis-cable-label">Baixa tensão</div>
+          <div className="esis-cable-track">
+            <span className="esis-particle esis-pc-green" style={{animationDelay:"0.1s"}}/>
+            <span className="esis-particle esis-pc-green" style={{animationDelay:"0.6s"}}/>
+          </div>
+        </div>
+
+        {/* ── NODE 4: COMERCIALIZAÇÃO ── */}
+        <div className="esis-node esis-node-com">
+          <div className="esis-node-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6"  y="22" width="20" height="36" rx="2" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.30)" strokeWidth="1.2"/>
+              <rect x="28" y="30" width="16" height="28" rx="2" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.22)" strokeWidth="1.2"/>
+              <rect x="46" y="36" width="12" height="22" rx="1.5" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.18)" strokeWidth="1"/>
+              {[26,32,38,44].map(y => [9,16].map(x =>
+                <rect key={x+"-"+y} x={x} y={y} width="4" height="4" rx="0.5" fill="rgba(255,230,120,0.38)"/>
+              ))}
+              {[34,40].map(y => [31,37].map(x =>
+                <rect key={x+"-"+y} x={x} y={y} width="3.5" height="3.5" rx="0.5" fill="rgba(255,230,120,0.32)"/>
+              ))}
+            </svg>
+          </div>
+          <div className="esis-node-label">COMERCIALIZAÇÃO</div>
+          <div className="esis-node-sub">Mercado livre · Consumidores</div>
+        </div>
+      </div>
+
+      {/* ── Lei 15.269/2025 callout ── */}
+      <div className="esis-law-block">
+        <div className="esis-law-left">
+          <div className="esis-law-badge">Lei 15.269/2025</div>
+          <div className="esis-law-title">Maior reforma regulatória do setor elétrico</div>
+          <div className="esis-law-note">Impacto direto na demanda por assessoria especializada em geração — nossa área de atuação.</div>
+        </div>
+        <div className="esis-law-items">
+          <div className="esis-law-item"><span className="esis-law-year">2027</span><span>Abertura do mercado livre para industriais e comerciais (baixa tensão)</span></div>
+          <div className="esis-law-item"><span className="esis-law-year">2028</span><span>Abertura para consumidores residenciais e rurais</span></div>
+          <div className="esis-law-item"><span className="esis-law-icon">✕</span><span>Fim dos descontos TUST/TUSD para novos contratos de migração a partir de 2026</span></div>
+          <div className="esis-law-item"><span className="esis-law-icon">🛡</span><span>Criação do Supridor de Última Instância (SUI) para garantia de fornecimento</span></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ModuleHome({ goTo }) {
   const [openPhase, setOpenPhase] = useState(null);
   const [openPillar, setOpenPillar] = useState(null);
   const [openRalie, setOpenRalie] = useState(null);
-  const [mktStats, setMktStats] = useState(null);
-  const [mktLoading, setMktLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      // SQL agregado: conta usinas únicas e soma MW na última publicação do RALIE,
-      // excluindo projetos já concluídos (= Tendência de Expansão)
-      const sql = [
-        `SELECT count(*) AS n,`,
-        `       sum(cast("MdaPotenciaOutorgadaKw" AS float))/1000 AS mw,`,
-        `       max("DatRalie") AS dt`,
-        `FROM "${RALIE_RES_ID}"`,
-        `WHERE "DscSituacaoObra" != 'Conclu\u00edda'`,
-        `  AND "DatRalie" = (SELECT max("DatRalie") FROM "${RALIE_RES_ID}")`
-      ].join(" ");
-
-      try {
-        const res = await ckanSQL(sql);
-        if (res?.success && res.result?.records?.[0]) {
-          const r = res.result.records[0];
-          const usinas = Math.round(parseFloat(r.n || 0));
-          const mw     = Math.round(parseFloat(r.mw || 0));
-          const capexBilhoes = (mw * CAPEX_POR_MW) / 1000;
-          setMktStats({ usinas, mw, capexBilhoes, dataConsulta: fmtData(r.dt), isFallback: false });
-          return;
-        }
-      } catch { /* cai no fallback abaixo */ }
-
-      // Fallback: valores de referência do painel RALIE (Abr/2026)
-      const mw = RALIE_REF.mw;
-      setMktStats({
-        usinas: RALIE_REF.usinas,
-        mw,
-        capexBilhoes: (mw * CAPEX_POR_MW) / 1000,
-        dataConsulta: RALIE_REF.data,
-        isFallback: true
-      });
-    })().finally(() => setMktLoading(false));
-  }, []);
 
   const activePhase = CYCLE_PHASES.find(p => p.id === openPhase);
 
@@ -179,65 +252,7 @@ function ModuleHome({ goTo }) {
         </div>
       </div>
 
-      {/* ── Dimensão do mercado ── */}
-      <div className="mkt-opportunity-block">
-        <div className="mkt-opp-header">
-          <span className="mkt-opp-kicker">Dimensão do mercado · ANEEL / RALIE ao vivo</span>
-          <h3 className="mkt-opp-title">O tamanho da oportunidade em geração de energia</h3>
-          <p className="mkt-opp-lead">
-            Capacidade geradora em fase de implantação no Brasil — cada megawatt outorgado representa um empreendimento com obrigações regulatórias ativas perante a ANEEL.
-          </p>
-        </div>
-
-        {mktLoading ? (
-          <div className="mkt-opp-loading">Consultando base RALIE/ANEEL…</div>
-        ) : mktStats ? (
-          <>
-            <div className="mkt-opp-metrics mkt-opp-metrics-3">
-              <div className="mkt-metric mkt-metric-primary">
-                <div className="mkt-m-sup">estimativa de investimento em implantação</div>
-                <div className="mkt-m-value">
-                  R$ {fmtBilhoes(mktStats.capexBilhoes)}
-                  <span className="mkt-m-unit"> bilhões</span>
-                </div>
-                <div className="mkt-m-label">em projetos ativos de geração elétrica</div>
-              </div>
-              <div className="mkt-metric mkt-metric-secondary">
-                <div className="mkt-m-sup">potência outorgada em implantação</div>
-                <div className="mkt-m-value mkt-m-value-sm">
-                  {mktStats.mw.toLocaleString("pt-BR")}
-                  <span className="mkt-m-unit"> MW</span>
-                </div>
-                <div className="mkt-m-label">capacidade a ser instalada (2026–2032+)</div>
-              </div>
-              <div className="mkt-metric mkt-metric-tertiary">
-                <div className="mkt-m-sup">empreendimentos monitorados</div>
-                <div className="mkt-m-value mkt-m-value-sm">
-                  {mktStats.usinas.toLocaleString("pt-BR")}
-                  <span className="mkt-m-unit"> usinas</span>
-                </div>
-                <div className="mkt-m-label">em expansão — potencial de atuação</div>
-              </div>
-            </div>
-            <div className="mkt-opp-footnote">
-              * Painel <strong>Tendência de Expansão</strong> — RALIE/ANEEL.{" "}
-              {mktStats.isFallback ? `Referência ${mktStats.dataConsulta} (dados offline, consulte o painel ao vivo).` : `Consulta realizada em ${mktStats.dataConsulta}.`}{" "}
-              Estimativa de investimento baseada em CAPEX médio ponderado de R$ 5,5 M/MW (solar ~R$ 4,5M · eólica ~R$ 7,0M · PCH ~R$ 6,0M, ref. 2025).{" "}
-              Fonte: <a href="https://dadosabertos.aneel.gov.br/dataset/ralie-relatorio-de-acompanhamento-da-expansao-da-oferta-de-geracao-de-energia-eletrica" target="_blank" rel="noreferrer">dadosabertos.aneel.gov.br</a>.
-            </div>
-          </>
-        ) : (
-          <div className="mkt-opp-loading mkt-opp-offline">
-            Dados offline — abra o <button className="mkt-opp-link" onClick={() => goTo(6)}>Painel de Leads</button> para consultar ao vivo.
-          </div>
-        )}
-
-        <div className="mkt-opp-cta-line">
-          <span className="mkt-opp-arrow">→</span>
-          <span>Todo projeto neste universo tem obrigações regulatórias ativas com a ANEEL — e a maioria não conta com assessoria especializada.</span>
-          <button className="mkt-opp-link" onClick={() => goTo(6)}>Ver Painel de Leads →</button>
-        </div>
-      </div>
+      <EnergyFlowDiagram />
 
       {/* ── Ciclo de vida ── */}
       <h3 className="section-title">

@@ -28,7 +28,7 @@ function App() {
   const renderModule = () => {
     switch (active) {
       case 0: return <window.ModuleHome goTo={setActive} />;
-      case 1: return <window.ModuleMercado />;
+      case 1: return <window.ModuleMercado goTo={setActive} />;
       case 2: return <window.ModulePenalidades />;
       case 3: return <window.ModuleExcludente />;
       case 4: return <window.ModuleConformidade />;
