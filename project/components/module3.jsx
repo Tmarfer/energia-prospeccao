@@ -144,9 +144,6 @@ function ModuleExcludente() {
       </div>
 
       <h3 className="section-title"><span className="num">3.4</span>O fluxo processual</h3>
-      <p style={{ fontSize: 13.5, color: "var(--text-muted)", marginBottom: 16, marginTop: -6 }}>
-        Clique em cada etapa para ver o detalhamento técnico.
-      </p>
 
       <div className="flow-v2">
         {FLOW.map((s, idx) => (

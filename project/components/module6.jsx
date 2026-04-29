@@ -403,7 +403,6 @@ function ModuleRaliePanel() {
             <div className="detail-empty">
               <div className="ico">◐</div>
               <h4>Selecione um empreendimento</h4>
-              <p>Clique em uma linha da lista para ver a ficha completa do lead — dados de licenciamento, conexão e pontos de abordagem comercial.</p>
             </div>
           )}
           {selected && (

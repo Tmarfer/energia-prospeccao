@@ -197,9 +197,6 @@ function ModulePenalidades() {
       </p>
 
       <h3 className="section-title"><span className="num">2.1</span>As três camadas de penalidade</h3>
-      <p style={{ fontSize: 13.5, color: "var(--text-muted)", marginBottom: 16, marginTop: -6 }}>
-        Clique em cada camada para ver o detalhamento técnico.
-      </p>
 
       <div className="pen-grid">
         {PENALTIES.map(p => (

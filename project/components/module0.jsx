@@ -255,10 +255,10 @@ function ModuleHome({ goTo }) {
       <EnergyFlowDiagram />
 
       {/* ── Ciclo de vida ── */}
-      <h3 className="section-title">
+      <div className="cycle-section-highlight">
+      <h3 className="section-title cycle-section-title">
         <span className="num">▶</span>Ciclo de vida de um empreendimento de geração elétrica
       </h3>
-      <p className="home-hint-text">Clique em cada fase para ver obrigações e riscos específicos.</p>
 
       <div className="cycle-timeline">
         {CYCLE_PHASES.map((phase, idx) => (
@@ -294,12 +294,13 @@ function ModuleHome({ goTo }) {
         </div>
       )}
 
+      </div>{/* end cycle-section-highlight */}
+
       {/* ── 3 Pilares ── */}
       <div className="home-divider" />
       <h3 className="section-title" style={{ textAlign: "center", borderBottom: "none", paddingBottom: 0 }}>
         Os 3 pilares de serviço
       </h3>
-      <p className="home-hint-text" style={{ textAlign: "center" }}>Clique em cada pilar para ver o escopo detalhado.</p>
 
       <div className="pillars-row">
         {PILLARS.map(p => (
@@ -332,7 +333,6 @@ function ModuleHome({ goTo }) {
       <h3 className="section-title" style={{ textAlign: "center", borderBottom: "none", paddingBottom: 0 }}>
         Como captamos clientes: o RALIE / ANEEL
       </h3>
-      <p className="home-hint-text" style={{ textAlign: "center" }}>Clique para ver como transformamos dados públicos em pipeline qualificado.</p>
 
       <div className="ralie-flow-row">
         {RALIE_BOXES.map((box, idx) => (
@@ -360,9 +360,6 @@ function ModuleHome({ goTo }) {
         {" "}A dor do cliente:{" "}
         <strong style={{ color: "#92400E" }}>multas de até 10% do investimento + cassação da outorga</strong>
       </div>
-      <p className="home-hint-text" style={{ textAlign: "center", marginBottom: 24 }}>
-        Clique em qualquer bloco para aprofundar o tema · Use a navegação lateral para explorar os módulos
-      </p>
 
       <div className="home-cta-row">
         <button className="home-cta" onClick={() => goTo(1)}>

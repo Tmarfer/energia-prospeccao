@@ -2824,10 +2824,7 @@ p.lead { font-size: var(--fs-md); color: var(--text-dark); }
 .home-firms-v2 .sep { color: var(--text-muted); font-size: var(--fs-sm); font-weight: 500; }
 
 .home-hint-text {
-  font-size: var(--fs-base);
-  color: var(--text-muted);
-  margin: calc(-1 * var(--space-2)) 0 var(--space-5);
-  font-style: italic;
+  display: none;
 }
 
 
@@ -3040,6 +3037,47 @@ p.lead { font-size: var(--fs-md); color: var(--text-dark); }
   .esis-cable { flex: 0 0 100%; height: 36px; flex-direction: row; justify-content: center; }
   .esis-cable-track { width: 80px; height: 3px; }
 }
+
+/* ── Ciclo de vida — bloco com destaque (Inicial) ── */
+.cycle-section-highlight {
+  background: linear-gradient(135deg, rgba(217,119,87,0.06) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1.5px solid rgba(217,119,87,0.28);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6) var(--space-6) var(--space-5);
+  margin-bottom: var(--space-8);
+  position: relative;
+}
+.cycle-section-highlight::before {
+  content: "★ ÁREA DE ATUAÇÃO DO ESCRITÓRIO";
+  position: absolute;
+  top: -11px; left: 20px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--copper-300);
+  background: var(--surface);
+  padding: 0 10px;
+  border-radius: 4px;
+}
+.cycle-section-title { margin-top: 0 !important; }
+
+/* ── strong/bold inside market block — always white ── */
+.mkt-opp-lead strong,
+.mkt-opp-footnote strong {
+  color: rgba(255,255,255,0.95);
+  font-weight: 700;
+}
+
+/* ── ESIS diagram font scale-up ── */
+.esis-node svg { width: 64px; height: 64px; }
+.esis-node-label { font-size: var(--fs-base); font-weight: 800; }
+.esis-node-sub   { font-size: var(--fs-sm); color: rgba(255,255,255,0.50); }
+.esis-node-badge { font-size: var(--fs-xs); padding: 3px 12px; }
+.esis-law-title  { font-size: var(--fs-base); }
+.esis-law-item   { font-size: var(--fs-sm); }
+.esis-law-note   { font-size: var(--fs-sm); }
+.esis-kicker     { font-size: var(--fs-sm); }
 
 /* ── Market opportunity block (Module 0) ── */
 .mkt-opportunity-block {
