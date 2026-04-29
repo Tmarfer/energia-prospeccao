@@ -1144,6 +1144,7 @@
     }
     .cbr-risk { border-color: rgba(200,30,30,0.18); background: rgba(200,30,30,0.04); }
     .cbr-label { font-size: 11.5px; color: rgba(255,255,255,0.40); margin-bottom: 6px; }
+    .cbr-perc  { font-size: 10px; color: rgba(255,255,255,0.25); font-style: italic; }
     .cbr-val { font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.85); }
     .cbr-risk .cbr-val { color: rgba(255,160,160,0.90); }
     .cb-result-total {
@@ -1552,7 +1553,7 @@
         <span class="em-copper">grande em exposição.</span>
       </h2>
       <p class="body-md reveal reveal-delay-2" style="margin-top:16px;max-width:700px;">
-        Uma CGH de 1 MW pode ter R$ 4 milhões investidos — e até R$ 400 mil em multas. Uma PCH de 30 MW pode ter R$ 180 milhões em capex — e R$ 18 milhões em penalidades acumuladas. Calcule a exposição do seu empreendimento.
+        Uma CGH de 5 MW pode ter R$ 57 milhões investidos — e até R$ 5,7 milhões em multas. Uma PCH de 30 MW pode ter R$ 240 milhões em capex — e R$ 24 milhões em penalidades acumuladas. Calcule a exposição do seu empreendimento.
       </p>
 
       <!-- CGH / PCH dimension cards -->
@@ -1560,26 +1561,26 @@
         <div class="calc-type-card" id="card-cgh">
           <div class="ctc-badge">CGH</div>
           <div class="ctc-full">Central Geradora Hidrelétrica</div>
-          <div class="ctc-range">Até <strong>1 MW</strong> instalado</div>
+          <div class="ctc-range">Até <strong>5 MW</strong> instalado</div>
           <div class="ctc-divider"></div>
-          <div class="ctc-row"><span class="ctc-label">Capex típico</span><span class="ctc-val">R$ 3–6 M/MW</span></div>
-          <div class="ctc-row"><span class="ctc-label">Para 1 MW</span><span class="ctc-val">~R$ 4,5 mi</span></div>
-          <div class="ctc-row ctc-risk"><span class="ctc-label">Multa máx. (10%)</span><span class="ctc-val ctc-val-red">R$ 450 mil</span></div>
-          <div class="ctc-row ctc-risk"><span class="ctc-label">Garantia editalícia (2%)</span><span class="ctc-val ctc-val-red">R$ 90 mil</span></div>
-          <div class="ctc-row ctc-risk"><span class="ctc-label">PLD/mês (atraso)</span><span class="ctc-val ctc-val-red">~R$ 63 mil</span></div>
-          <div class="ctc-note">Capac. factor hídrico 55% · PLD ref. R$ 160/MWh</div>
+          <div class="ctc-row"><span class="ctc-label">Capex típico</span><span class="ctc-val">R$ 7–16 M/MW</span></div>
+          <div class="ctc-row"><span class="ctc-label">Para 5 MW (médio R$ 11,5 M/MW)</span><span class="ctc-val">~R$ 57,5 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">Multa máx. (10% capex)</span><span class="ctc-val ctc-val-red">R$ 5,75 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">Garantia editalícia (2% capex)</span><span class="ctc-val ctc-val-red">R$ 1,15 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">PLD/mês (atraso)</span><span class="ctc-val ctc-val-red">~R$ 317 mil</span></div>
+          <div class="ctc-note">Capac. factor hídrico 55% · PLD ref. R$ 160/MWh · Fonte: EPE PDE 2034 / ABRAPCH</div>
         </div>
         <div class="calc-type-card" id="card-pch">
           <div class="ctc-badge ctc-badge-pch">PCH</div>
           <div class="ctc-full">Pequena Central Hidrelétrica</div>
-          <div class="ctc-range"><strong>1 a 30 MW</strong> instalados</div>
+          <div class="ctc-range"><strong>&gt;5 até 30 MW</strong> instalados</div>
           <div class="ctc-divider"></div>
-          <div class="ctc-row"><span class="ctc-label">Capex típico</span><span class="ctc-val">R$ 4–8 M/MW</span></div>
-          <div class="ctc-row"><span class="ctc-label">Para 30 MW</span><span class="ctc-val">~R$ 180 mi</span></div>
-          <div class="ctc-row ctc-risk"><span class="ctc-label">Multa máx. (10%)</span><span class="ctc-val ctc-val-red">R$ 18 mi</span></div>
-          <div class="ctc-row ctc-risk"><span class="ctc-label">Garantia editalícia (2%)</span><span class="ctc-val ctc-val-red">R$ 3,6 mi</span></div>
+          <div class="ctc-row"><span class="ctc-label">Capex típico</span><span class="ctc-val">R$ 5–11 M/MW</span></div>
+          <div class="ctc-row"><span class="ctc-label">Para 30 MW (médio R$ 8,0 M/MW)</span><span class="ctc-val">~R$ 240 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">Multa máx. (10% capex)</span><span class="ctc-val ctc-val-red">R$ 24 mi</span></div>
+          <div class="ctc-row ctc-risk"><span class="ctc-label">Garantia editalícia (2% capex)</span><span class="ctc-val ctc-val-red">R$ 4,8 mi</span></div>
           <div class="ctc-row ctc-risk"><span class="ctc-label">PLD/mês (atraso)</span><span class="ctc-val ctc-val-red">~R$ 1,9 mi</span></div>
-          <div class="ctc-note">Capac. factor hídrico 55% · PLD ref. R$ 160/MWh</div>
+          <div class="ctc-note">Capac. factor hídrico 55% · PLD ref. R$ 160/MWh · Fonte: EPE PDE 2034 / ABRAPCH</div>
         </div>
       </div>
 
@@ -1593,8 +1594,8 @@
           </div>
           <div class="cb-inputs">
             <div class="cb-field">
-              <label class="cb-label" id="lbl-mw">Potência instalada (MW) — até 1 MW</label>
-              <input type="range" id="inp-mw" min="0.1" max="1" step="0.1" value="0.5" class="cb-slider">
+              <label class="cb-label" id="lbl-mw">Potência instalada (MW) — até 5 MW</label>
+              <input type="range" id="inp-mw" min="0.5" max="5" step="0.5" value="2.5" class="cb-slider">
               <div class="cb-slider-val"><span id="val-mw">0,5</span> MW</div>
             </div>
             <div class="cb-field">
@@ -1607,26 +1608,26 @@
         <div class="cb-results">
           <div class="cb-result-item">
             <div class="cbr-label">💰 Capex estimado</div>
-            <div class="cbr-val" id="res-capex">R$ 2,3 mi</div>
+            <div class="cbr-val" id="res-capex">R$ 28,8 mi</div>
           </div>
           <div class="cb-result-item cbr-risk">
-            <div class="cbr-label">⚖ Multa administrativa máx.</div>
-            <div class="cbr-val" id="res-multa">R$ 225 mil</div>
+            <div class="cbr-label">⚖ Multa adm. máx. <span class="cbr-perc">(10% do capex)</span></div>
+            <div class="cbr-val" id="res-multa">R$ 2,9 mi</div>
           </div>
           <div class="cb-result-item cbr-risk">
-            <div class="cbr-label">🔐 Execução de garantia</div>
-            <div class="cbr-val" id="res-garantia">R$ 45 mil</div>
+            <div class="cbr-label">🔐 Execução de garantia <span class="cbr-perc">(2% do capex)</span></div>
+            <div class="cbr-val" id="res-garantia">R$ 576 mil</div>
           </div>
           <div class="cb-result-item cbr-risk">
-            <div class="cbr-label">⚡ Exposição PLD acumulada</div>
-            <div class="cbr-val" id="res-pld">R$ 378 mil</div>
+            <div class="cbr-label">⚡ Exposição PLD <span class="cbr-perc">(MW × 720h × 55% × R$160/MWh × meses)</span></div>
+            <div class="cbr-val" id="res-pld">R$ 950 mil</div>
           </div>
           <div class="cb-result-total">
             <div class="cbr-label">Exposição total estimada</div>
-            <div class="cbr-total" id="res-total">R$ 648 mil</div>
+            <div class="cbr-total" id="res-total">R$ 4,5 mi</div>
           </div>
         </div>
-        <div class="cb-disclaimer">Estimativa ilustrativa. Capex CGH: R$ 4,5 M/MW · PCH: R$ 6 M/MW · PLD ref.: R$ 160/MWh · Fator de capacidade hídrico: 55% · Garantia: 2% do capex. Valores reais dependem de laudo técnico.</div>
+        <div class="cb-disclaimer">Estimativa ilustrativa baseada no Módulo 1 — O Mercado. Capex médio CGH: R$ 11,5 M/MW (faixa R$ 7–16 M/MW) · PCH: R$ 8,0 M/MW (faixa R$ 5–11 M/MW) · PLD ref.: R$ 160/MWh · Fator de capacidade hídrico: 55% · Garantia: 2% do capex · Multa: até 10% do investimento (art. 3º, Res. Norm. ANEEL). Fontes: EPE — Caderno de Custos PDE 2034 (set. 2024) · ABRAPCH. Valores reais dependem de laudo técnico.</div>
       </div>
 
     </div>
@@ -2160,7 +2161,7 @@
     });
     // ── Calculadora de Exposição ─────────────────────────
     (function() {
-      const CAPEX = { cgh: 4.5, pch: 6.0 }; // R$ M/MW
+      const CAPEX = { cgh: 11.5, pch: 8.0 }; // R$ M/MW — médio EPE PDE 2034 / ABRAPCH
       const PLD_REF = 160; // R$/MWh
       const CF = 0.55;     // capacity factor hidro
       const HORAS_MES = 720;
@@ -2202,10 +2203,14 @@
 
       function setType(t) {
         tipo = t;
-        const maxMw = t === 'cgh' ? 1 : 30;
-        inpMw.max = maxMw;
-        inpMw.value = Math.min(parseFloat(inpMw.value), maxMw);
-        lblMw.textContent = 'Potência instalada (MW) — ' + (t === 'cgh' ? 'até 1 MW' : '1 a 30 MW');
+        const maxMw  = t === 'cgh' ? 5 : 30;
+        const minMw  = t === 'cgh' ? 0.5 : 5;
+        const stepMw = t === 'cgh' ? 0.5 : 1;
+        inpMw.max  = maxMw;
+        inpMw.min  = minMw;
+        inpMw.step = stepMw;
+        inpMw.value = t === 'cgh' ? 2.5 : 15;
+        lblMw.textContent = 'Potência instalada (MW) — ' + (t === 'cgh' ? 'até 5 MW' : '> 5 até 30 MW');
         document.getElementById('btn-cgh').classList.toggle('active', t === 'cgh');
         document.getElementById('btn-pch').classList.toggle('active', t === 'pch');
         calc();
